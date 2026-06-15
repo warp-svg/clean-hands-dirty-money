@@ -1,0 +1,12 @@
+# Clean Hands, Dirty Money — never commit secrets or build junk.
+.env
+.env.local
+.env.*.local
+.secrets/
+*.key
+*.pem
+.vercel
+node_modules/
+dist/
+.DS_Store
+npm-debug.log*
