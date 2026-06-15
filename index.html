@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a1a2f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dirty Money">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<title>Clean Hands, Dirty Money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#86BFF8; --sky2:#A9D3FB; --sky-soft:#D6EAFD; --glove:#EAF4FE;
+    --ink:#1B5DA6; --ink2:#2E74C0; --ink-deep:#0F3E73; --text:#16385C; --muted:#4D6E93;
+    --sol:#9945FF; --sol2:#14F195; --fire:#FF7A3C; --pos:#2F9E63;
+    --paper:#F4FAFF; --white:#fff; --line:rgba(27,93,166,.16); --line2:rgba(27,93,166,.28);
+    --shadow:0 24px 60px -28px rgba(27,93,166,.35); --shadow-sm:0 10px 30px -18px rgba(27,93,166,.45);
+    --r:26px;
+    /* legacy aliases used across rules, mapped to brand */
+    --gold:var(--fire); --gold-deep:#d8612a; --green:var(--pos); --green-bright:var(--sol2);
+    --ink:var(--ink); --heat:var(--fire); --panel:rgba(255,255,255,.93); --pool:var(--sky);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none;}
+  body{
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text); background:var(--paper);
+    user-select:none; -webkit-user-select:none; touch-action:manipulation; position:fixed; inset:0; width:100%;
+  }
+  body::before{ content:""; position:fixed; inset:-20%; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(50% 40% at 18% 12%, rgba(134,191,248,.55), transparent 60%),
+      radial-gradient(45% 38% at 85% 18%, rgba(153,69,255,.16), transparent 60%),
+      radial-gradient(55% 45% at 78% 88%, rgba(20,241,149,.16), transparent 62%),
+      radial-gradient(50% 45% at 12% 85%, rgba(169,211,251,.5), transparent 62%);
+    background-size:200% 200%; animation:aurora 26s ease-in-out infinite; filter:saturate(1.05);}
+  @keyframes aurora{0%,100%{background-position:0% 0%;}50%{background-position:100% 100%;}}
+
+  /* ambient money rain (kept, lighter) */
+  #rain{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+  .rainbill{position:absolute; top:-8%; font-size:24px; opacity:.38; animation:rainfall linear forwards;}
+  @keyframes rainfall{0%{transform:translateY(-10vh) rotate(0deg);}100%{transform:translateY(112vh) rotate(var(--spin,360deg));}}
+  /* signature rising soap bubbles */
+  #bubbles{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+  #bubbles i{position:absolute; bottom:-12%; border-radius:50%; background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.95),rgba(169,211,251,.5) 60%,rgba(134,191,248,.22));
+    box-shadow:inset 0 0 6px rgba(255,255,255,.8), 0 4px 14px rgba(27,93,166,.12); animation:bubbleRise var(--d,9s) linear infinite; animation-delay:var(--w,0s); opacity:.7;}
+  @keyframes bubbleRise{0%{transform:translateY(0) translateX(0) scale(.7); opacity:0;}10%{opacity:.75;}100%{transform:translateY(-118vh) translateX(var(--dx,20px)) scale(1); opacity:0;}}
+
+  #app{position:relative; z-index:1; height:100vh; height:100dvh; max-width:560px; margin:0 auto;
+    display:flex; flex-direction:column; padding:env(safe-area-inset-top) 10px calc(env(safe-area-inset-bottom) + 6px);}
+
+  header{flex:0 0 auto; text-align:center; padding:2px 4px 0;}
+  .title{font-family:'Fraunces',Georgia,serif; font-weight:700; letter-spacing:.1px; line-height:1; font-size:clamp(16px,4.7vw,22px);
+    background:linear-gradient(100deg,var(--ink-deep) 20%,var(--sky) 42%,var(--sol) 52%,var(--sky) 62%,var(--ink-deep) 84%);
+    background-size:220% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shine 7s linear infinite;}
+  @keyframes shine{0%{background-position:0% 0;}100%{background-position:220% 0;}}
+  .title .clean{}
+  .title .dirty{}
+  .sub{font-family:'Caveat',cursive; font-size:13px; letter-spacing:.3px; color:var(--ink2); margin-top:0; font-weight:700;}
+
+  .bank{margin:2px 0 1px; text-align:center;}
+  .bank .amt{font-weight:800; font-variant-numeric:tabular-nums; font-size:clamp(24px,7.6vw,38px);
+    color:var(--pos); text-shadow:0 1px 0 #fff, 0 6px 20px rgba(20,241,149,.30); line-height:1; display:inline-flex; align-items:baseline;}
+  .bank .amt .cur{font-size:.62em; margin-right:2px; color:var(--sol2); transform:translateY(-2px);}
+  .bank .rate{font-size:12.5px; color:var(--muted); margin-top:3px; font-weight:600;}
+  .bank .rate b{color:var(--fire);}
+
+  .heatwrap{display:flex; align-items:center; gap:8px; margin:3px 6px 1px; font-size:11.5px; color:var(--text);}
+  .heatwrap .lbl{flex:0 0 auto; font-weight:800; letter-spacing:.3px; color:var(--fire);}
+  .heatbar{flex:1 1 auto; height:11px; border-radius:7px; overflow:hidden; background:rgba(27,93,166,.12); box-shadow:inset 0 1px 2px rgba(27,93,166,.18);}
+  .heatbar > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,#ffd06b,var(--fire) 60%,#ff4d4d); transition:width .35s ease; border-radius:7px;}
+  .heatpct{flex:0 0 auto; font-variant-numeric:tabular-nums; color:var(--fire); font-weight:800; min-width:32px; text-align:right;}
+  #heatStatus{text-align:center; font-size:11px; color:var(--muted); margin:0 0 2px; min-height:13px; font-style:italic;}
+
+  .scene{position:relative; flex:1 1 auto; width:100%; min-height:180px; max-height:54vh; margin:2px auto 0;
+    border-radius:var(--r); overflow:hidden; background:var(--sky-soft); cursor:pointer; touch-action:none;
+    border:1px solid var(--line2); box-shadow:var(--shadow), inset 0 0 0 1px rgba(255,255,255,.6);}
+  .scene img.bgimg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none;}
+  .scene img.frame{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; opacity:0; transition:opacity .22s ease;}
+  .scene img.frame.on{opacity:1;}
+  .scene.tapped{animation:squish .12s ease;}
+  @keyframes squish{0%{transform:scale(1);}40%{transform:scale(.985);}100%{transform:scale(1);}}
+  .scene .glint{position:absolute; inset:0; pointer-events:none; opacity:0; background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.7) 50%,transparent 60%);}
+  .scene.tapped .glint{animation:glint .35s ease;}
+  @keyframes glint{0%{opacity:0; transform:translateX(-30%);}30%{opacity:.95;}100%{opacity:0; transform:translateX(30%);}}
+  .taghint{position:absolute; left:50%; bottom:9px; transform:translateX(-50%); font-size:10.5px; letter-spacing:1.2px;
+    text-transform:uppercase; font-weight:800; color:#fff; background:rgba(15,62,115,.62); padding:5px 12px; border-radius:20px; pointer-events:none; transition:opacity .4s; border:1px solid rgba(255,255,255,.28); text-align:center;}
+  .scene .cps-badge{position:absolute; top:9px; right:9px; pointer-events:none; background:rgba(15,62,115,.6); border:1px solid rgba(255,255,255,.3);
+    color:#fff; font-weight:800; font-size:12px; padding:4px 9px; border-radius:20px; font-variant-numeric:tabular-nums;}
+  .mult-badge{position:absolute; top:9px; left:9px; pointer-events:none; background:linear-gradient(160deg,var(--sol),#6a23c9);
+    color:#fff; font-weight:900; font-size:12px; padding:4px 10px; border-radius:20px; border:1px solid rgba(255,255,255,.4);
+    display:none; animation:pulse .8s ease-in-out infinite; box-shadow:0 6px 18px rgba(153,69,255,.4);}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+
+  #hands{position:absolute; inset:0; pointer-events:none;}
+  .helper{position:absolute; width:17.5%; transform:translate(-50%,-50%); pointer-events:auto; cursor:pointer; transition:transform .1s ease; filter:drop-shadow(0 3px 6px rgba(15,62,115,.4));}
+  .helper img{width:100%; display:block; -webkit-user-drag:none;}
+  .helper.bump{animation:hbump .2s ease;}
+  @keyframes hbump{0%{transform:translate(-50%,-50%) scale(1);}45%{transform:translate(-50%,-50%) scale(1.14);}100%{transform:translate(-50%,-50%) scale(1);}}
+
+  #fx{position:absolute; inset:0; overflow:hidden; pointer-events:none;}
+  .pop{position:absolute; font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:21px; color:var(--pos); text-shadow:0 1px 0 #fff, 0 2px 6px rgba(20,241,149,.4);
+    will-change:transform,opacity; animation:pop 1s ease-out forwards; white-space:nowrap;}
+  .pop.gold{color:var(--sol); text-shadow:0 1px 0 #fff,0 2px 6px rgba(153,69,255,.4);}
+  @keyframes pop{0%{transform:translate(-50%,0) scale(.7); opacity:0;}15%{opacity:1; transform:translate(-50%,-10px) scale(1.1);}100%{transform:translate(-50%,-78px) scale(1); opacity:0;}}
+  .bill{position:absolute; font-size:22px; will-change:transform,opacity; pointer-events:none; animation:fly var(--d,2.2s) ease-in forwards;}
+  @keyframes fly{0%{transform:translate(0,0) rotate(0deg) scale(.7); opacity:0;}12%{opacity:1;}100%{transform:translate(var(--x,0),var(--y,-260px)) rotate(var(--r2,40deg)) scale(1); opacity:0;}}
+  .flip{position:absolute; font-size:24px; will-change:transform,opacity; pointer-events:none; animation:flip .55s ease-out forwards;}
+  @keyframes flip{0%{transform:translate(-50%,-50%) rotateY(0deg) scale(.6); opacity:0;}25%{opacity:1;}100%{transform:translate(-50%,-130%) rotateY(540deg) scale(1.05); opacity:0;}}
+  .spark{position:absolute; pointer-events:none; color:var(--sol2); font-weight:900; font-size:17px; will-change:transform,opacity; animation:sparkBurst .6s ease-out forwards; text-shadow:0 0 8px rgba(20,241,149,.7);}
+  @keyframes sparkBurst{0%{transform:translate(-50%,-50%) scale(.2) rotate(0deg); opacity:0;}20%{opacity:1;}100%{transform:translate(calc(-50% + var(--sx,0)),calc(-50% + var(--sy,0))) scale(1) rotate(140deg); opacity:0;}}
+
+  #goldie{position:fixed; z-index:30; font-size:46px; cursor:pointer; pointer-events:auto; display:none;
+    filter:drop-shadow(0 0 14px rgba(255,122,60,.9)); animation:goldfloat 2.2s ease-in-out infinite;}
+  @keyframes goldfloat{0%,100%{transform:translateY(0) rotate(-8deg);}50%{transform:translateY(-14px) rotate(8deg);}}
+
+  .tabs{flex:0 0 auto; display:flex; gap:5px; margin:6px 2px 4px;}
+  .tab{flex:1; min-width:0; text-align:center; font-size:10.5px; font-weight:800; letter-spacing:.2px; padding:9px 2px; border-radius:16px;
+    background:rgba(255,255,255,.9); border:1px solid var(--line); color:var(--muted); cursor:pointer; text-transform:uppercase; white-space:nowrap; box-shadow:var(--shadow-sm);}
+  .tab.active{color:#fff; background:linear-gradient(160deg,var(--ink2),var(--ink-deep)); border-color:transparent; box-shadow:0 10px 22px -12px rgba(15,62,115,.6);}
+  .tab .b{display:inline-block; min-width:16px; font-size:10px; background:rgba(27,93,166,.14); color:inherit; border-radius:8px; padding:0 5px; margin-left:3px;}
+  .tab.active .b{background:rgba(255,255,255,.28);}
+
+  .ops{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:2px 2px 6px; display:flex; flex-direction:column; gap:8px;
+    mask-image:linear-gradient(to bottom,transparent 0,#000 8px,#000 calc(100% - 8px),transparent 100%);}
+  .ops::-webkit-scrollbar{width:0;}
+  .pane{display:none; flex-direction:column; gap:8px;}
+  .pane.show{display:flex;}
+  .op{display:flex; align-items:center; gap:11px; padding:10px 12px; background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
+    transition:transform .08s,border-color .2s,background .2s; position:relative; overflow:hidden; box-shadow:var(--shadow-sm);}
+  .op:not(.locked):active{transform:scale(.985);}
+  .op.afford{border-color:rgba(20,241,149,.55); background:linear-gradient(160deg,rgba(214,255,238,.85),rgba(255,255,255,.78));}
+  .op.locked{opacity:.5; filter:grayscale(.4);}
+  .op .ico{flex:0 0 auto; width:46px; height:46px; border-radius:15px; display:grid; place-items:center; font-size:25px;
+    background:radial-gradient(circle at 32% 28%,#fff,var(--sky-soft) 70%,var(--sky2)); border:1px solid rgba(255,255,255,.7); box-shadow:inset 0 0 0 1px var(--line);}
+  .op .mid{flex:1 1 auto; min-width:0;}
+  .op .nm{font-weight:800; font-size:14.5px; color:var(--text); display:flex; align-items:center; gap:7px;}
+  .op .nm .ct{font-size:11px; font-weight:800; color:#fff; background:linear-gradient(160deg,var(--sol),#6a23c9); border-radius:10px; padding:1px 7px; min-width:18px; text-align:center;}
+  .op .dsc{font-size:10.5px; color:var(--muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .op .yield{font-size:10.5px; color:var(--pos); margin-top:2px; font-weight:700;}
+  .op .buy{flex:0 0 auto; text-align:right;}
+  .op .cost{font-weight:900; font-size:14px; color:var(--fire); font-variant-numeric:tabular-nums;}
+  .op.afford .cost{color:var(--pos);}
+  .op .costlbl{font-size:9px; letter-spacing:1px; color:var(--muted); text-transform:uppercase;}
+  .op.owned-up{opacity:.62;}
+  .op.owned-up .cost{color:var(--pos);}
+
+  .ach{display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--panel); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-sm);}
+  .ach.locked{opacity:.45;}
+  .ach .ai{font-size:22px;}
+  .ach .an{font-weight:800; font-size:13px; color:var(--text);}
+  .ach .ad{font-size:10.5px; color:var(--muted);}
+
+  footer{flex:0 0 auto; text-align:center; font-size:9.5px; color:var(--muted); padding:2px 0 0; letter-spacing:.2px; line-height:1.25;}
+  footer b{color:var(--ink2);}
+
+  #toast{position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 16px); transform:translateX(-50%) translateY(20px);
+    background:linear-gradient(160deg,#fff,var(--glove)); color:var(--ink-deep); border:1px solid var(--line2);
+    padding:10px 17px; border-radius:30px; font-weight:800; font-size:13px; opacity:0; transition:opacity .3s,transform .3s;
+    pointer-events:none; z-index:50; box-shadow:var(--shadow); max-width:90vw; text-align:center;}
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  #sound{position:fixed; top:calc(env(safe-area-inset-top) + 8px); right:calc(env(safe-area-inset-right) + 10px); z-index:45;
+    width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:16px; cursor:pointer;
+    background:rgba(255,255,255,.94); border:1px solid var(--line); color:var(--ink-deep); box-shadow:var(--shadow-sm); -webkit-tap-highlight-color:transparent;}
+  .locale{position:absolute; bottom:9px; left:9px; z-index:6; pointer-events:none; font-size:11px; font-weight:800; letter-spacing:.3px;
+    color:#fff; background:rgba(15,62,115,.6); border:1px solid rgba(255,255,255,.3); padding:4px 10px; border-radius:20px;}
+  .helper.cuffed{filter:grayscale(1) brightness(.62);}
+  .helper .cuff{position:absolute; top:-4px; left:50%; transform:translateX(-50%); font-size:17px; display:none;}
+  .helper.cuffed .cuff{display:block;}
+  #raid{position:absolute; inset:0; z-index:13; display:none; flex-direction:column; align-items:center; justify-content:center; gap:11px; text-align:center; padding:16px; pointer-events:auto;}
+  #raid.on{display:flex; animation:raidflash 1s steps(1) infinite;}
+  @keyframes raidflash{0%,49%{background:rgba(255,77,77,.42);}50%,100%{background:rgba(15,62,115,.5);}}
+  #raid .rt{font-family:'Fraunces',serif; font-size:30px; font-weight:700; letter-spacing:1px; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.5);}
+  #raid .rs{font-size:12px; color:#fff; max-width:84%; line-height:1.35;}
+  #bailBtn{font-weight:900; padding:11px 18px; border-radius:14px; background:linear-gradient(160deg,var(--sol2),#0fc77b); border:1px solid rgba(255,255,255,.5); color:#06351f; cursor:pointer; box-shadow:0 10px 24px -10px rgba(20,241,149,.7);}
+  .pbar{height:13px; border-radius:7px; background:rgba(27,93,166,.12); overflow:hidden; box-shadow:inset 0 1px 2px rgba(27,93,166,.18);}
+  .pbar > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--sky),var(--sol2)); transition:width .35s ease; border-radius:7px;}
+  #fleeBtn{text-align:center; font-family:'Plus Jakarta Sans',sans-serif; font-weight:900; letter-spacing:.4px; padding:13px; border-radius:16px; background:linear-gradient(160deg,var(--ink2),var(--ink-deep)); border:1px solid transparent; color:#fff; cursor:pointer; box-shadow:0 12px 26px -12px rgba(15,62,115,.7);}
+  #fleeBtn.ready{background:linear-gradient(160deg,var(--sol),#6a23c9); box-shadow:0 0 0 1px rgba(255,255,255,.4), 0 0 22px rgba(153,69,255,.5); animation:pulse 1.1s ease-in-out infinite;}
+  #fleeBtn.locked2{opacity:.5; filter:grayscale(.4);}
+  /* New Game / Reset control */
+  #resetBlock{flex-direction:column; align-items:stretch; gap:8px; padding:14px; margin-top:2px; border:1px dashed var(--line2); background:rgba(224,72,60,.04);}
+  #resetBtn{text-align:center; font-family:'Plus Jakarta Sans',sans-serif; font-weight:900; letter-spacing:.4px; padding:12px; border-radius:14px; background:rgba(255,255,255,.9); border:1px solid rgba(224,72,60,.5); color:#c0331f; cursor:pointer; box-shadow:var(--shadow-sm);}
+  #resetBlock.endgame{border-color:rgba(153,69,255,.5); background:rgba(153,69,255,.05);}
+  #resetBlock.endgame #resetBtn{border-color:rgba(153,69,255,.55); color:#6a23c9;}
+  /* Brand-styled confirm modal */
+  .cmodal{position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center; padding:22px;
+    background:rgba(15,62,115,.42); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);}
+  .cmodal.on{display:flex; animation:cmIn .18s ease;}
+  @keyframes cmIn{from{opacity:0;} to{opacity:1;}}
+  .cmcard{width:min(420px,94vw); background:var(--paper,#F4FAFF); border:1px solid var(--line); border-radius:22px; padding:22px 20px 18px;
+    box-shadow:0 30px 60px -24px rgba(15,62,115,.6); text-align:center; transform:translateY(8px); transition:transform .18s ease;}
+  .cmodal.on .cmcard{transform:translateY(0);}
+  .cmcard .cmemoji{font-size:40px; line-height:1;}
+  .cmcard h3{font-family:'Fraunces',serif; font-size:21px; font-weight:700; color:var(--ink-deep); margin:8px 0 4px;}
+  .cmcard p{font-size:13px; line-height:1.45; color:var(--muted); margin:0 0 16px;}
+  .cmcard p b{color:var(--ink-deep);}
+  .cmrow{display:flex; gap:10px;}
+  .cmrow button{flex:1; font-family:'Plus Jakarta Sans',sans-serif; font-weight:900; font-size:14px; padding:13px; border-radius:14px; cursor:pointer; border:1px solid transparent;}
+  #cmCancel{background:rgba(27,93,166,.08); color:var(--ink-deep); border-color:var(--line);}
+  #cmConfirm{background:linear-gradient(160deg,#e0483c,#b0291c); color:#fff; box-shadow:0 10px 24px -10px rgba(224,72,60,.7);}
+  .ticker{flex:0 0 auto; margin:3px auto 0; font-size:11px; font-weight:800; color:var(--ink-deep); background:rgba(255,255,255,.94); border:1px solid var(--line); border-radius:20px; padding:4px 13px; max-width:max-content; letter-spacing:.2px; cursor:pointer; box-shadow:var(--shadow-sm);}
+  .ticker .up{color:var(--pos);} .ticker .down{color:#e0483c;} .ticker b{color:var(--sol);}
+  .fab{position:fixed; z-index:46; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:15px; cursor:pointer; background:rgba(255,255,255,.94); border:1px solid var(--line); color:var(--ink-deep); box-shadow:var(--shadow-sm); -webkit-tap-highlight-color:transparent;}
+  .fab-l{top:calc(env(safe-area-inset-top) + 8px); left:calc(env(safe-area-inset-left) + 10px);}
+  .fab-l2{top:calc(env(safe-area-inset-top) + 50px); left:calc(env(safe-area-inset-left) + 10px);}
+  .modal{position:fixed; inset:0; z-index:60; background:rgba(15,62,115,.62); display:none; align-items:center; justify-content:center; padding:20px;}
+  .modal.on{display:flex;}
+  .modalcard{background:linear-gradient(165deg,#fff,var(--glove)); border:1px solid var(--line2); border-radius:var(--r); padding:20px; max-width:340px; width:100%; box-shadow:var(--shadow);}
+  .modalcard h3{font-family:'Fraunces',serif; margin:0 0 6px; font-size:18px; color:var(--ink-deep);}
+  .modalcard p{font-size:12px; color:var(--muted); line-height:1.45; margin:6px 0;}
+  .modalcard .lnk{width:100%; font-size:11px; padding:9px; border-radius:12px; background:var(--sky-soft); border:1px solid var(--line); color:var(--ink-deep); margin:6px 0; word-break:break-all;}
+  .mbtn{display:block; width:100%; text-align:center; font-weight:800; padding:12px; border-radius:14px; margin-top:8px; cursor:pointer; border:1px solid transparent; background:linear-gradient(160deg,var(--ink2),var(--ink-deep)); color:#fff; box-shadow:0 12px 26px -14px rgba(15,62,115,.7);}
+  .mbtn.alt{background:rgba(27,93,166,.08); border-color:var(--line); color:var(--ink-deep);}
+  .mclose{float:right; cursor:pointer; color:var(--muted); font-weight:800; font-size:16px;}
+  .glove{font-size:30px; line-height:1; margin:0 auto 1px; position:relative; width:max-content; animation:bob 3.4s ease-in-out infinite; filter:drop-shadow(0 6px 10px rgba(27,93,166,.3));}
+  .glove .spk{position:absolute; top:-6px; right:-12px; font-size:14px; color:var(--sol2); animation:tw 2.2s ease-in-out infinite; text-shadow:0 0 8px rgba(20,241,149,.8);}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-6px) rotate(4deg);}}
+  @keyframes tw{0%,100%{transform:scale(.8) rotate(0deg); opacity:.7;}50%{transform:scale(1.2) rotate(90deg); opacity:1;}}
+
+  /* JUICE: premium gold money counter */
+  .bank .amt{ background:linear-gradient(100deg,#b9881f,#ffe28a 34%,#fffbe2 50%,#ffd24a 64%,#b9881f); background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; text-shadow:none;
+    animation:goldsheen 6s linear infinite; filter:drop-shadow(0 2px 7px rgba(202,160,46,.42)); }
+  .bank .amt .cur{ -webkit-text-fill-color:transparent; color:transparent; }
+  @keyframes goldsheen{0%{background-position:0 0;}100%{background-position:220% 0;}}
+  #fedFill{background:linear-gradient(90deg,var(--sol),#ff4d4d)!important;}
+  .heatbar>i,.pbar>i{position:relative; overflow:hidden;}
+  .heatbar>i::after,.pbar>i::after{content:""; position:absolute; inset:0; background:linear-gradient(100deg,transparent 32%,rgba(255,255,255,.7) 50%,transparent 68%); background-size:240% 100%; animation:barSheen 2.4s linear infinite;}
+  @keyframes barSheen{0%{background-position:130% 0;}100%{background-position:-130% 0;}}
+  .ctrls{flex:0 0 auto; display:flex; gap:6px; margin:4px auto 1px; max-width:max-content; align-items:stretch; flex-wrap:wrap; justify-content:center;}
+  .ctrl{font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:11.5px; padding:7px 13px; border-radius:14px; border:1px solid var(--line); cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px; color:var(--ink-deep); background:rgba(255,255,255,.94); box-shadow:var(--shadow-sm); -webkit-tap-highlight-color:transparent; white-space:nowrap;}
+  .ctrl.invite{color:#fff; background:linear-gradient(160deg,var(--sol),#6a23c9); border-color:transparent; box-shadow:0 9px 22px -10px rgba(153,69,255,.75); animation:pulse 2.4s ease-in-out infinite;}
+  .ctrl.buy{color:#06351f; background:linear-gradient(160deg,var(--sol2),#0fc77b); border-color:transparent;}
+  .ctrl.ic{padding:9px 12px;}
+  #pile{position:absolute; left:0; right:0; bottom:0; height:36%; pointer-events:none; overflow:hidden;}
+  .pilebill{position:absolute; bottom:0; font-size:23px; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35)); animation:pileDrop .45s ease-out;}
+  @keyframes pileDrop{0%{transform:translateY(-44px) scale(.5); opacity:0;}70%{opacity:1;}100%{transform:translateY(0) scale(1); opacity:1;}}
+  .sheet{position:fixed; inset:0; z-index:55; display:none;}
+  .sheet.on{display:block;}
+  .scrim{position:absolute; inset:0; background:rgba(15,62,115,.55);}
+  .sheetcard{position:absolute; left:0; right:0; bottom:0; max-width:560px; margin:0 auto; display:flex; flex-direction:column;
+    background:linear-gradient(165deg,#fff,var(--glove)); border:1px solid var(--line2); border-bottom:0; border-radius:var(--r) var(--r) 0 0;
+    box-shadow:0 -18px 50px rgba(15,62,115,.4); padding:6px 12px calc(env(safe-area-inset-bottom) + 14px);
+    height:80vh; max-height:84dvh; transform:translateY(100%); transition:transform .28s cubic-bezier(.22,1,.36,1);}
+  .sheet.on .sheetcard{transform:translateY(0);}
+  .sheethandle{width:48px; height:6px; border-radius:3px; background:var(--line2); margin:4px auto 6px; cursor:grab; touch-action:none;}
+  .sheethead{display:flex; align-items:center; justify-content:space-between; padding:0 2px 6px;}
+  #sheetTitle{font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:var(--ink-deep);}
+  .sheetclose{font-size:19px; font-weight:800; color:var(--ink-deep); cursor:pointer; display:grid; place-items:center; width:42px; height:42px; margin:-4px -6px -4px 0; border-radius:50%; background:rgba(27,93,166,.08);}
+  .sheetbody{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:2px 2px 8px; display:flex; flex-direction:column; gap:8px;
+    mask-image:linear-gradient(to bottom,transparent 0,#000 8px,#000 calc(100% - 8px),transparent 100%);}
+  .sheetbody::-webkit-scrollbar{width:0;}
+  .fedstatus{flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:5px; margin:2px auto 0; max-width:max-content;
+    font-size:11px; font-weight:800; padding:3px 12px; border-radius:20px; border:1px solid var(--line); background:rgba(255,255,255,.72);}
+  .fedstatus.clear{color:var(--pos); border-color:rgba(20,241,149,.5);}
+  .fedstatus.risky{color:#d23; border-color:rgba(255,77,77,.6); background:rgba(255,236,231,.9); animation:pulse 1.3s ease-in-out infinite;}
+  .fedstatus b{color:var(--ink-deep);}
+  .sheetcash{flex:0 0 auto; display:flex; align-items:baseline; justify-content:space-between; padding:2px 4px 8px; margin-bottom:4px; border-bottom:1px solid var(--line); font-size:12px; color:var(--muted); font-weight:800;}
+  .sheetcash b{font-size:21px; font-variant-numeric:tabular-nums; background:linear-gradient(100deg,#b9881f,#ffe28a 34%,#fffbe2 50%,#ffd24a 64%,#b9881f); background-size:220% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; animation:goldsheen 6s linear infinite;}
+  .op.cant{opacity:.6;}
+  /* PERF: when the menu sheet is open, the scene is fully occluded — stop animating it */
+  body.sheet-open #rain, body.sheet-open #bubbles, body.sheet-open #fx{display:none;}
+  body.sheet-open::before{animation-play-state:paused;}
+  body.sheet-open .bank .amt, body.sheet-open .heatbar>i::after, body.sheet-open .pbar>i::after, body.sheet-open .scene img.frame{animation-play-state:paused;}
+  /* PERF: respect reduced-motion — kill the always-on ambient animations */
+  @media (prefers-reduced-motion: reduce){
+    #bubbles, body::before, .bank .amt, .heatbar>i::after, .pbar>i::after, .ctrl.invite, .fedstatus.risky, #goldie{animation:none !important;}
+    .title{animation:none !important;}
+  }
+</style>
+</head>
+<body>
+<div id="rain"></div>
+<div id="bubbles"></div>
+
+<div id="app">
+  <header>
+    <div class="title"><span class="clean">Clean Hands,</span> <span class="dirty">Dirty Money</span></div>
+    <div class="sub">Wash your bags. Come out spotless.</div>
+  </header>
+  <div id="ticker" class="ticker">$WRP loading price…</div>
+  <div class="ctrls">
+    <button class="ctrl invite" id="invite"><span>🤝</span> Invite — earn 2×</button>
+    <button class="ctrl buy" id="trade"><span>💳</span> Buy $CLEAN</button>
+    <button class="ctrl ic" id="sound" title="Sound">🔊</button>
+  </div>
+
+  <div class="bank">
+    <div class="amt" id="bank"><span class="cur">$</span><span id="bankNum">0</span></div>
+    <div class="rate">laundering <b id="cps">$0</b>/sec &nbsp;·&nbsp; <b id="tapv">$1</b>/count<span id="refspan"></span></div>
+  </div>
+
+  <div class="heatwrap">
+    <span class="lbl">🚔 HEAT</span>
+    <span class="heatbar"><i id="heatFill"></i></span>
+    <span class="heatpct" id="heatPct">0%</span>
+  </div>
+  <div id="heatStatus">the authorities suspect nothing.</div>
+  <div id="fedstatus" class="fedstatus" style="display:none"></div>
+
+  <div class="scene" id="scene">
+    <img class="bgimg" id="bgimg" src="assets/bg0.jpg" alt="" draggable="false">
+    <div id="pile"></div>
+    <img class="frame on" id="ovlA" src="assets/f00.webp" alt="counting cash" draggable="false">
+    <img class="frame" id="ovlB" src="assets/f01.webp" alt="" draggable="false">
+    <div class="glint"></div>
+    <div class="mult-badge" id="multBadge">FRENZY ×7</div>
+    <div class="cps-badge" id="sceneBadge">idle</div>
+    <div id="hands"></div>
+    <div id="fx"></div>
+    <div class="locale" id="locale">📍 Santorini</div>
+    <div id="raid"><div class="rt">🚔 RAIDED</div><div class="rs" id="raidMsg">The feds kicked the door in. Operations frozen, your crew cuffed. Lie low to cool down — or post bail to reopen now.</div><div id="bailBtn">POST BAIL</div></div>
+    <div class="taghint" id="hint">TAP &nbsp;·&nbsp; SWIPE TO RIFFLE</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-pane="buildings" id="tabBuild">Launder</div>
+    <div class="tab" data-pane="upgrades" id="tabUp">Perks <span class="b" id="upBadge">0</span></div>
+    <div class="tab" data-pane="bribes" id="tabBri">Bribes</div>
+    <div class="tab" data-pane="ach" id="tabAch">Rep <span class="b" id="achBadge">0</span></div>
+    <div class="tab" data-pane="escape" id="tabEsc">Escape <span class="b" id="escBadge">0</span></div>
+  </div>
+
+  <div id="cmodal" class="cmodal">
+    <div class="cmcard">
+      <div class="cmemoji" id="cmEmoji">🧼</div>
+      <h3 id="cmTitle">Start a new life?</h3>
+      <p id="cmBody">This wipes your <b>entire run</b> — bank, operations, perks, bribes, passports, heat, FBI record and achievements — and drops you back in <b>Santorini</b> with nothing. This can't be undone.</p>
+      <div class="cmrow">
+        <button id="cmCancel">Keep playing</button>
+        <button id="cmConfirm">Wipe &amp; restart</button>
+      </div>
+    </div>
+  </div>
+  <div id="sheet" class="sheet"><div class="scrim" id="scrim"></div>
+    <div class="sheetcard">
+      <div class="sheethandle" id="sheetHandle"></div>
+      <div class="sheethead"><span id="sheetTitle">Launder</span><span class="sheetclose" id="sheetX">✕</span></div>
+      <div class="sheetcash"><span>💵 Cash on hand</span><b id="sheetCash">$0</b></div>
+      <div class="sheetbody ops">
+        <div class="pane show" id="paneBuildings"></div>
+        <div class="pane" id="paneUpgrades"></div>
+        <div class="pane" id="paneBribes"></div>
+        <div class="pane" id="paneAch"></div>
+        <div class="pane" id="paneEscape"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>No real money was laundered in the making of this game. <b>Probably.</b> · Anonymous stats only — no wallet, no PII.</footer>
+</div>
+
+<div id="goldie">💼</div>
+<div id="toast"></div>
+<div id="modal" class="modal"><div class="modalcard" id="modalcard"></div></div>
+
+<script>
+"use strict";
+(function(){
+  // ---------------- CONFIG (Balance-tunable knobs; data is the true leader) ----------------
+  const CONFIG = {
+    tapCoeff: 0.02,        // tapValue = (1 + baseCps*tapCoeff) * mults   (nerfed from 0.10)
+    swipeFactor: 0.45,     // a swipe-riffle count is worth this fraction of a deliberate tap
+    helperTapMult: 2.5,    // helper-hand tap bonus = tapValue * this
+    maxHelperSprites: 10,  // visual cap on helping hands (decoupled from owned count/multiplier)
+    fxCap: 26,             // max concurrent scene particles (perf)
+    rainCap: 40,           // max concurrent falling bills (perf)
+    pileMax: 22,           // max cash-pile sprites on the marble
+    fbiMilestones: [1e6, 5e7, 1e9, 2e10, 5e11],  // CURRENT-RUN earned $ that triggers a federal check (resets on flee)
+    fbiHeatGate: 55,       // Heat >= this when you cross a milestone -> raid; below -> pass clean
+    fbiSeizeFrac: 0.35,    // base fraction of bank seized on a raid (escalates per milestone)
+    econEmitMs: 60000,     // cadence for reporting tap-vs-passive income mix
+  };
+  // ---------------- ECONOMY ----------------
+  // op #1 "Extra Hands" is the visible+tappable helper (cursor analog). Rest are off-scene buildings.
+  const OPS = [
+    {id:"hands",   name:"Extra Hands",    icon:"🧤", cost:15,         rate:0.2,    hand:true,  dsc:"more gloved hands on the marble"},
+    {id:"counter", name:"Money Counter",  icon:"🧮", cost:140,        rate:1.2,    dsc:"riffles bills faster than the eye"},
+    {id:"laundro", name:"Laundromat",     icon:"🧺", cost:1500,       rate:9,      dsc:"spin cycle, rinse, repeat"},
+    {id:"carwash", name:"Car Wash",       icon:"🚗", cost:16000,      rate:55,     dsc:"squeaky clean, every time"},
+    {id:"store",   name:"Corner Store",   icon:"🏪", cost:190000,     rate:300,    dsc:"surprisingly busy ATM out front"},
+    {id:"casino",  name:"Casino Floor",   icon:"🎰", cost:2400000,    rate:1700,   dsc:"the house always... cleans up"},
+    {id:"shell",   name:"Shell Company",  icon:"🐚", cost:31000000,   rate:9500,   dsc:"registered in a sunny tax haven"},
+    {id:"art",     name:"Art Gallery",    icon:"🍌", cost:430000000,  rate:52000,  dsc:"this banana is worth $2M"},
+    {id:"trust",   name:"Offshore Trust", icon:"🏝️", cost:6.2e9,      rate:300000, dsc:"beneficiary: unclear, on purpose"},
+    {id:"mixer",   name:"Crypto Mixer",   icon:"🌀", cost:9.1e10,     rate:1.9e6,  dsc:"coins go in, history comes out"},
+    {id:"yacht",   name:"Superyacht Fund",icon:"🛥️", cost:1.3e12,     rate:1.2e7,  dsc:"depreciating asset, appreciating alibi"},
+    {id:"bank", name:"Private Bank",   icon:"\u{1F3DB}️", cost:1.9e13, rate:9e7, dsc:"too big to jail"},
+    {id:"sov",  name:"Sovereign Fund", icon:"\u{1F451}", cost:2.6e14, rate:6e8, dsc:"a whole nation's slush fund"},
+  ];
+  const GROWTH = 1.15;
+
+  const UPGRADES = [
+    {id:"pen",   name:"Counterfeit Pen",     icon:"🖊️", cost:500,       mult:2,  what:"tap", dsc:"×2 money per count"},
+    {id:"gloves",name:"Premium Nitrile",     icon:"🧤", cost:6000,      mult:2,  what:"tap", dsc:"×2 money per count"},
+    {id:"machine",name:"Bill Counter 9000",  icon:"🧮", cost:75000,     mult:2,  what:"tap", dsc:"×2 money per count"},
+    {id:"lawyer",name:"Slick Lawyer",        icon:"⚖️", cost:1500000,   mult:2,  what:"all", dsc:"×2 ALL income"},
+    {id:"banker",name:"Swiss Banker",        icon:"🏦", cost:90000000,  mult:2,  what:"all", dsc:"×2 ALL income"},
+    {id:"senator",name:"A Friendly Senator", icon:"🎩", cost:5e9,       mult:3,  what:"all", dsc:"×3 ALL income"},
+    {id:"immunity",name:"Diplomatic Immunity",icon:"\u{1F6C2}", cost:7.5e10, mult:3, what:"all", dsc:"×3 ALL income"},
+    {id:"parachute",name:"Golden Parachute",  icon:"\u{1FA82}", cost:1.2e12, mult:2, what:"all", dsc:"×2 ALL income"},
+  ];
+
+  const BRIBES = [
+    {id:"cop",      name:"Bribe a Beat Cop",  icon:"👮", type:"dump", amount:14, cost:1200,   growth:1.22, dsc:"slip him an envelope — heat −14 now"},
+    {id:"inspector",name:"Pay the Inspector",  icon:"🕵️", type:"dump", amount:42, cost:45000,  growth:1.35, dsc:"the report gets 'lost' — heat −42 now"},
+    {id:"fixer",    name:"Retain a Lawyer",    icon:"⚖️", type:"cool", cost:18000,  growth:1.55, dsc:"+passive cooling: heat falls faster"},
+    {id:"don",      name:"Pay Off a Senator",  icon:"🎩", type:"slow", cost:600000, growth:1.7,  dsc:"−heat gain: draws less attention"},
+    {id:"fed", name:"Bribe a Fed Agent", icon:"\u{1F575}️", type:"fedskip", cost:2.5e8, growth:1.4, dsc:"buys a pass for your NEXT federal check (skip one raid)"},
+  ];
+  const LOCALES = [
+    {name:"Santorini", bg:"assets/bg0.jpg"},
+    {name:"Amsterdam", bg:"assets/loc_amsterdam.jpg"},
+    {name:"Dubai", bg:"assets/loc_dubai.jpg"},
+    {name:"Monaco", bg:"assets/loc_monaco.jpg"},
+    {name:"Caribbean", bg:"assets/loc_caribbean.jpg"},
+    {name:"Swiss Chalet", bg:"assets/loc_swiss.jpg"},
+    {name:"Private Island", bg:"assets/loc_island.jpg"},
+  ];
+
+  const ACH = [
+    {id:"a1", icon:"💵", name:"First Wash",     test:s=>s.earned>=1000,     dsc:"launder $1,000"},
+    {id:"a2", icon:"🧤", name:"Many Hands",     test:s=>s.owned.hands>=10,  dsc:"10 Extra Hands"},
+    {id:"a3", icon:"🚔", name:"On The Radar",   test:s=>s.heat>=50,         dsc:"reach 50% heat"},
+    {id:"a4", icon:"💼", name:"Made A Deal",    test:s=>s.deals>=1,         dsc:"grab a golden briefcase"},
+    {id:"a5", icon:"🏦", name:"Millionaire",    test:s=>s.earned>=1e6,      dsc:"launder $1,000,000"},
+    {id:"a6", icon:"👑", name:"Kingpin",        test:s=>s.earned>=1e9,      dsc:"launder $1,000,000,000"},
+    {id:"a7", icon:"👆", name:"Quick Fingers",  test:s=>s.taps>=500,        dsc:"500 hand-counts"},
+    {id:"a8", icon:"🌀", name:"Ghost Money",    test:s=>s.owned.mixer>=1,   dsc:"open a Crypto Mixer"},
+    {id:"a9", icon:"\u{1F575}️", name:"Untouchable",   test:s=>(s.fbiEvaded||0)>=1,dsc:"flee while the FBI closes in"},
+    {id:"a10",icon:"\u{1F48E}", name:"Trillionaire",  test:s=>s.earned>=1e12,     dsc:"launder $1,000,000,000,000"},
+    {id:"a11",icon:"\u{1F30D}", name:"Globe-trotter", test:s=>s.passports>=6,     dsc:"reach the Private Island"},
+    {id:"a12",icon:"\u{1F91D}", name:"The Plug",      test:s=>!!s.everReferred,   dsc:"a friend joins via your link"},
+    {id:"a13",icon:"⚡", name:"Sticky Fingers",test:s=>s.taps>=5000,       dsc:"5,000 hand-counts"},
+  ];
+
+  const state = {
+    bank:0, earned:0, taps:0, deals:0,
+    owned:Object.fromEntries(OPS.map(o=>[o.id,0])),
+    ups:Object.fromEntries(UPGRADES.map(u=>[u.id,false])),
+    achv:Object.fromEntries(ACH.map(a=>[a.id,false])),
+    heat:0,
+    unlocked:Object.fromEntries(OPS.map((o,i)=>[o.id,i===0])),
+    frenzyUntil:0, frenzyMult:1,
+    passports:0, pastEarned:0, lastSeen:Date.now(),
+    busted:false, bribeOwned:{cop:0,inspector:0,fixer:0,don:0,fed:0},
+    refCode:"", refBonusUntil:0,
+    fedHeat:0, fbiSeen:false, fbiEvaded:0, everReferred:false, fbiIdx:0, fbiSkips:0,
+  };
+
+  // ---------------- FORMAT ----------------
+  const SUF=["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"];
+  function fmt(n){ if(!isFinite(n)) return "∞"; if(n<1000) return (Math.floor(n*10)/10%1===0)?String(Math.floor(n)):n.toFixed(1);
+    if(n>=1e36) return n.toExponential(2).replace("e+","e");
+    let t=0; while(n>=1000&&t<SUF.length-1){n/=1000;t++;} return (n>=100?n.toFixed(0):n.toFixed(2))+SUF[t]; }
+  function fmtInt(n){ return n<1000?String(Math.floor(n)):fmt(n); }
+
+  function opCost(o){ return o.cost*Math.pow(GROWTH,state.owned[o.id]); }
+  function achBonus(){ let n=0; for(const a of ACH) if(state.achv[a.id]) n++; return 1+n*0.02; }
+  function prestigeMult(){ return 1+state.passports*0.03; }
+  function lifetime(){ return state.pastEarned+state.earned; }
+  const PP_FIRST=25000;
+  function totalPassports(){ return Math.floor(Math.sqrt(Math.max(0,lifetime())/PP_FIRST)); }
+  function ppReq(n){ return PP_FIRST*n*n; }
+  function bribeCost(b){ return b.cost*Math.pow(b.growth, state.bribeOwned[b.id]); }
+  function coolRate(){ return (state.bribeOwned.fixer||0)*0.20; }
+  function heatGainMult(){ return 1/(1+(state.bribeOwned.don||0)*0.20); }
+  function pendingPassports(){ return Math.max(0, totalPassports()-state.passports); }
+  function allMult(){ let m=1; for(const u of UPGRADES) if(state.ups[u.id]&&u.what==="all") m*=u.mult; return m*state.frenzyMult*prestigeMult()*achBonus()*refMult(); }
+  function tapMult(){ let m=1; for(const u of UPGRADES) if(state.ups[u.id]&&u.what==="tap") m*=u.mult; return m; }
+  function cpsBase(){ let s=0; for(const o of OPS) s+=o.rate*state.owned[o.id]; return s; }
+  function cps(){ return cpsBase()*allMult(); }
+  function tapValue(){ return Math.max(1, Math.floor((1+cpsBase()*CONFIG.tapCoeff)*tapMult()*allMult())); }
+
+  // ---------------- DOM ----------------
+  const $=id=>document.getElementById(id);
+  const bankNum=$("bankNum"),cpsEl=$("cps"),tapvEl=$("tapv");
+  const heatFill=$("heatFill"),heatPct=$("heatPct"),heatStatus=$("heatStatus");
+  const scene=$("scene"),fx=$("fx"),hint=$("hint"),badge=$("sceneBadge"),handsLayer=$("hands");
+  const multBadge=$("multBadge"),goldie=$("goldie"),toast=$("toast"),rain=$("rain");
+  const ovlA=$("ovlA"), ovlB=$("ovlB");
+  const FRAMES=["assets/f00.webp","assets/f01.webp","assets/f02.webp","assets/f03.webp"];
+  const HFRAMES=["assets/h0.webp","assets/h1.webp","assets/h2.webp"];
+  const _preload=[]; [...FRAMES,...HFRAMES].forEach(u=>{const im=new Image(); im.src=u; _preload.push(im);});
+
+  const paneB=$("paneBuildings"),paneU=$("paneUpgrades"),paneA=$("paneAch"),paneE=$("paneEscape"),paneBri=$("paneBribes");
+
+  // build buildings
+  const rows={};
+  for(const o of OPS){
+    const el=document.createElement("div"); el.className="op locked";
+    el.innerHTML=`<div class="ico">${o.icon}</div>
+      <div class="mid"><div class="nm">${o.name} <span class="ct" style="display:none">0</span></div>
+      <div class="dsc">${o.dsc}</div><div class="yield">+$${fmt(o.rate)}/sec each</div></div>
+      <div class="buy"><div class="cost">$${fmt(o.cost)}</div><div class="costlbl">cost</div></div>`;
+    el.addEventListener("click",()=>buy(o.id));
+    paneB.appendChild(el);
+    rows[o.id]={el,ct:el.querySelector(".ct"),cost:el.querySelector(".cost")};
+  }
+  // build upgrades
+  const upRows={};
+  for(const u of UPGRADES){
+    const el=document.createElement("div"); el.className="op locked";
+    el.innerHTML=`<div class="ico">${u.icon}</div>
+      <div class="mid"><div class="nm">${u.name}</div><div class="dsc">${u.dsc}</div></div>
+      <div class="buy"><div class="cost">$${fmt(u.cost)}</div><div class="costlbl">one-time</div></div>`;
+    el.addEventListener("click",()=>buyUp(u.id));
+    paneU.appendChild(el);
+    upRows[u.id]={el,cost:el.querySelector(".cost")};
+  }
+  // build achievements
+  const achRows={};
+  for(const a of ACH){
+    const el=document.createElement("div"); el.className="ach locked";
+    el.innerHTML=`<div class="ai">${a.icon}</div><div><div class="an">${a.name}</div><div class="ad">${a.dsc}</div></div>`;
+    paneA.appendChild(el); achRows[a.id]=el;
+  }
+
+  // tabs
+  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    paneB.classList.toggle("show",t.dataset.pane==="buildings");
+    paneU.classList.toggle("show",t.dataset.pane==="upgrades");
+    paneA.classList.toggle("show",t.dataset.pane==="ach");
+    paneE.classList.toggle("show",t.dataset.pane==="escape");
+    paneBri.classList.toggle("show",t.dataset.pane==="bribes");
+    openSheet(t.dataset.pane);
+  }));
+  const SHEET_TITLES={buildings:"Launder",upgrades:"Perks",bribes:"Bribes",ach:"Reputation",escape:"Escape"};
+  let _sheetOpen=false;
+  function openSheet(p){ const el=$("sheetTitle"); if(el) el.textContent=SHEET_TITLES[p]||p; $("sheet").classList.add("on"); document.body.classList.add("sheet-open"); _sheetOpen=true; }
+  function closeSheet(){ $("sheet").classList.remove("on"); document.body.classList.remove("sheet-open"); _sheetOpen=false; }
+  $("sheetX").addEventListener("click",function(e){ e.preventDefault(); e.stopPropagation(); closeSheet(); });
+  $("scrim").addEventListener("click",function(e){ e.preventDefault(); closeSheet(); });
+  $("sheet").addEventListener("click",function(e){ if(e.target===$("sheet")||e.target===$("scrim")) closeSheet(); });
+  (function(){ const card=$("sheet").querySelector(".sheetcard"), h=$("sheetHandle"); let sy=0,dragging=false;
+    h.addEventListener("pointerdown",e=>{e.preventDefault(); dragging=true; sy=e.clientY; card.style.transition="none"; try{h.setPointerCapture(e.pointerId);}catch(_){}},{passive:false});
+    h.addEventListener("pointermove",e=>{ if(!dragging) return; const dy=Math.max(0,e.clientY-sy); card.style.transform="translateY("+dy+"px)"; },{passive:false});
+    h.addEventListener("pointerup",e=>{ if(!dragging) return; dragging=false; const dy=Math.max(0,e.clientY-sy); card.style.transition=""; card.style.transform=""; if(dy>90) closeSheet(); });
+    h.addEventListener("pointercancel",()=>{dragging=false; card.style.transition=""; card.style.transform="";});
+  })();
+
+  // ---- BRIBES / CONNECTIONS ----
+  const briRows={};
+  for(const b of BRIBES){
+    const el=document.createElement("div"); el.className="op";
+    el.innerHTML=`<div class="ico">${b.icon}</div>
+      <div class="mid"><div class="nm">${b.name} <span class="ct" style="display:none">0</span></div><div class="dsc">${b.dsc}</div></div>
+      <div class="buy"><div class="cost">$${fmt(b.cost)}</div><div class="costlbl">${b.type==="dump"?"each":"level"}</div></div>`;
+    el.addEventListener("click",()=>buyBribe(b.id)); paneBri.appendChild(el);
+    briRows[b.id]={el,ct:el.querySelector(".ct"),cost:el.querySelector(".cost")};
+  }
+  function buyBribe(id){
+    const b=BRIBES.find(x=>x.id===id); const c=bribeCost(b); if(state.bank<c) return;
+    state.bank-=c; state.bribeOwned[id]++; play("bribe");
+    if(b.type==="dump"){ state.heat=Math.max(0,state.heat-b.amount); showToast(b.icon+" "+b.name+" — heat −"+b.amount); }
+    else if(b.type==="fedskip"){ state.fbiSkips=(state.fbiSkips||0)+1; showToast(b.icon+" "+b.name+" — next federal check covered"); }
+    else { showToast(b.icon+" "+b.name+" → Lv"+state.bribeOwned[id]); }
+    if(navigator.vibrate) navigator.vibrate(10); render();
+  }
+  // ---- LOCALE ----
+  function setLocale(){ const i=Math.min(state.passports, LOCALES.length-1); const L=LOCALES[i]; const endgame=(i===LOCALES.length-1);
+    $("bgimg").src=L.bg; $("locale").textContent=(endgame?"👑 ":"📍 ")+L.name+(endgame?" · you made it":"");
+    const rb=$("resetBlock"), rbtn=$("resetBtn"), rh=$("resetHint");
+    if(rb) rb.classList.toggle("endgame",endgame);
+    if(rbtn) rbtn.textContent=endgame?"👑 START A NEW LIFE":"NEW GAME / RESET PROGRESS";
+    if(rh) rh.innerHTML=endgame
+      ? "You’ve reached the <b>Private Island</b> — the end of the road. Start a brand-new life from <b>Santorini</b>: this wipes everything (bank, ops, perks, passports, heat &amp; achievements)."
+      : "Wipe this run and start fresh from <b>Santorini</b> — bank, ops, perks, passports, heat &amp; achievements all reset. Your soft <b>Flee</b> above keeps your passports; this does not.";
+  }
+  // ---- BUST / RAID ----
+  function triggerBust(){ if(state.busted) return; state.busted=true; play("bust"); track("bust",{});
+    $("raid").classList.add("on"); helperEls.forEach(e=>e.classList.add("cuffed"));
+    if(navigator.vibrate) navigator.vibrate([200,80,200,80,200]); showToast("🚔 RAIDED — operations frozen!"); render(); }
+  function liftBust(){ if(!state.busted) return; state.busted=false; $("raid").classList.remove("on");
+    helperEls.forEach(e=>e.classList.remove("cuffed")); showToast("🟢 Operations resumed — keep it cooler."); render(); }
+  function bailFine(){ return Math.max(500, Math.floor(Math.max(state.earned*0.12, cps()*600))); }
+  function postBail(){ const f=bailFine(); if(state.bank<f){ showToast("Need $"+fmt(f)+" to post bail."); return; }
+    state.bank-=f; state.heat=35; play("bribe"); showToast("⚖️ Bail posted: −$"+fmt(f)); liftBust(); }
+  // FBI: federal checks at CURRENT-RUN wealth milestones (resets on flee). Heat at the crossing decides the outcome.
+  function fbiCheck(){
+    const w=state.earned; // current-run / current-location wealth (earned resets to 0 on flee)
+    while(state.fbiIdx < CONFIG.fbiMilestones.length && w >= CONFIG.fbiMilestones[state.fbiIdx]){
+      const idx=state.fbiIdx; const ms=CONFIG.fbiMilestones[idx]; state.fbiIdx++;
+      if(!state.fbiSeen){ state.fbiSeen=true; track("fbi_trigger",{}); }
+      if(state.heat>=CONFIG.fbiHeatGate){
+        if((state.fbiSkips||0)>0){ state.fbiSkips--; state.fbiEvaded=(state.fbiEvaded||0)+1; track("fbi_evade",{m:idx});
+          showToast("🕵️ Fed check at $"+fmt(ms)+" — your inside man buried the file."); }
+        else { const seize=Math.floor(state.bank*Math.min(0.8, CONFIG.fbiSeizeFrac*(1+idx*0.15))); state.bank-=seize; state.heat=Math.max(0,state.heat-30); play("bust"); track("fbi_caught",{m:idx});
+          if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
+          showToast("🕵️ FEDERAL RAID at $"+fmt(ms)+" — heat was too high. Seized −$"+fmt(seize));
+          const r=scene.getBoundingClientRect(); spawnPop(r.width/2,r.height/2,"−$"+fmt(seize),true); }
+      } else {
+        if(state.heat>=35){ state.fbiEvaded=(state.fbiEvaded||0)+1; track("fbi_evade",{m:idx}); showToast("🕵️ Close call at $"+fmt(ms)+" — slipped past the Feds."); }
+        else { track("fbi_pass",{m:idx}); showToast("🕵️ Crossed $"+fmt(ms)+" clean — the Feds found nothing."); }
+      }
+    }
+  }
+
+  // ---- ESCAPE / PRESTIGE pane ----
+  paneE.innerHTML=`<div class="op" style="flex-direction:column;align-items:stretch;gap:10px;padding:14px">
+    <div class="nm" style="font-size:15px">\u{1F6C2} Flee the Country</div>
+    <div class="dsc" style="white-space:normal;line-height:1.4">Cash out, vanish abroad, and relocate to a new luxury hideout. Wipes your cash, operations, perks &amp; heat — but each <b style="color:var(--gold)">Fake Passport</b> is <b style="color:var(--green-bright)">+3% income, forever</b>, and moves you somewhere richer. First passport at <b>$25K</b> laundered all-time.</div>
+    <div class="pbar"><i id="ppFill"></i></div>
+    <div class="yield" id="escInfo" style="font-size:12px;white-space:normal"></div>
+    <div id="fleeBtn">FLEE THE COUNTRY</div>
+  </div>
+  <div class="op" id="resetBlock">
+    <div class="nm" style="font-size:15px">♻️ New Game</div>
+    <div class="dsc" id="resetHint" style="white-space:normal;line-height:1.4">Wipe this run and start fresh from <b>Santorini</b> — bank, ops, perks, passports, heat &amp; achievements all reset. Your soft <b>Flee</b> above keeps your passports; this does not.</div>
+    <div id="resetBtn">NEW GAME / RESET PROGRESS</div>
+  </div>`;
+  document.getElementById("fleeBtn").addEventListener("click",doPrestige);
+  document.getElementById("resetBtn").addEventListener("click",openResetModal);
+
+  function doPrestige(){
+    const gain=pendingPassports();
+    if(gain<1){ showToast("Not enough laundered yet to flee clean."); return; }
+    if(!confirm("Flee the country?\n\nYou lose your cash, operations, perks & heat, but gain "+gain+" Fake Passport"+(gain>1?"s":"")+" — +"+(gain*3)+"% PERMANENT income — and relocate to "+LOCALES[Math.min(totalPassports(),LOCALES.length-1)].name+".")) return;
+    play("prestige");
+    state.pastEarned+=state.earned; state.passports=totalPassports();
+    state.bank=0; state.earned=0;
+    for(const o of OPS) state.owned[o.id]=0;
+    for(const u of UPGRADES) state.ups[u.id]=false;
+    state.unlocked=Object.fromEntries(OPS.map((o,i)=>[o.id,i===0]));
+    state.heat=0; state.frenzyMult=1; multBadge.style.display="none";
+    state.fedHeat=0; state.fbiSeen=false; state.fbiIdx=0;
+    state.busted=false; $("raid").classList.remove("on");
+    for(const b of BRIBES) state.bribeOwned[b.id]=0;
+    helperEls.forEach(e=>e.remove()); helperEls.length=0;
+    track("flee",{passports:state.passports, locale:LOCALES[((state.passports%LOCALES.length)+LOCALES.length)%LOCALES.length].name});
+    displayBank=0; syncHands(); setLocale(); save(); render();
+    showToast("✈️ You vanished. "+state.passports+" Passports · +"+(state.passports*3)+"% forever.");
+  }
+
+  // ---- NEW GAME / HARD RESET ----
+  function openResetModal(){
+    const endgame = state.passports >= (LOCALES.length-1);
+    const em=$("cmEmoji"), ti=$("cmTitle"), bo=$("cmBody");
+    if(endgame){
+      if(em) em.textContent="\u{1F451}";
+      if(ti) ti.textContent="Start a new life?";
+      if(bo) bo.innerHTML="You’ve reached the <b>Private Island</b> — the top. Starting over wipes your <b>entire run</b> (bank, ops, perks, bribes, passports, heat, FBI record &amp; achievements) and drops you back in <b>Santorini</b> with nothing. This can’t be undone.";
+    } else {
+      if(em) em.textContent="\u{1F9FC}";
+      if(ti) ti.textContent="Wipe progress &amp; start over?";
+      if(bo) bo.innerHTML="This wipes your <b>entire run</b> — bank, operations, perks, bribes, passports, heat, FBI record and achievements — and drops you back in <b>Santorini</b> with nothing. This can’t be undone.";
+    }
+    $("cmodal").classList.add("on");
+  }
+  function closeResetModal(){ $("cmodal").classList.remove("on"); }
+  function hardReset(){
+    try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+    state.bank=0; state.earned=0; state.taps=0; state.deals=0;
+    for(const o of OPS) state.owned[o.id]=0;
+    for(const u of UPGRADES) state.ups[u.id]=false;
+    for(const a of ACH) state.achv[a.id]=false;
+    state.heat=0; state.frenzyUntil=0; state.frenzyMult=1; if(multBadge) multBadge.style.display="none";
+    state.unlocked=Object.fromEntries(OPS.map((o,i)=>[o.id,i===0]));
+    state.passports=0; state.pastEarned=0; state.lastSeen=Date.now();
+    state.busted=false; $("raid").classList.remove("on");
+    for(const b of BRIBES) state.bribeOwned[b.id]=0;
+    state.refBonusUntil=0; state.fedHeat=0; state.fbiSeen=false; state.fbiEvaded=0; state.fbiIdx=0; state.fbiSkips=0; state.everReferred=false;
+    helperEls.forEach(e=>e.classList&&e.classList.remove("cuffed"));
+    helperEls.forEach(e=>e.remove()); helperEls.length=0;
+    displayBank=0; syncHands(); setLocale();
+    // analytics: a normal fresh-run signal. Does NOT touch the analytics store or any chdm_* analytics keys.
+    try{ track("new_game",{}); }catch(e){}
+    save(); render(); updatePile&&updatePile();
+    closeResetModal(); closeSheet();
+    showToast("\u{1F9FC} Fresh start — welcome back to Santorini.");
+  }
+
+  // ---- SAVE / LOAD / OFFLINE ----
+  const SAVE_KEY="chdm_save_v1";
+  function save(){ try{ state.lastSeen=Date.now(); localStorage.setItem(SAVE_KEY, JSON.stringify({
+    bank:state.bank,earned:state.earned,taps:state.taps,deals:state.deals,owned:state.owned,ups:state.ups,
+    achv:state.achv,heat:state.heat,unlocked:state.unlocked,passports:state.passports,pastEarned:state.pastEarned,lastSeen:state.lastSeen,busted:state.busted,bribeOwned:state.bribeOwned,refBonusUntil:state.refBonusUntil,fedHeat:state.fedHeat,fbiSeen:state.fbiSeen,fbiEvaded:state.fbiEvaded,everReferred:state.everReferred,fbiIdx:state.fbiIdx,fbiSkips:state.fbiSkips})); }catch(e){} }
+  function load(){ try{ const s=JSON.parse(localStorage.getItem(SAVE_KEY)); if(!s) return false;
+    state.bank=s.bank||0; state.earned=s.earned||0; state.taps=s.taps||0; state.deals=s.deals||0;
+    Object.assign(state.owned,s.owned||{}); Object.assign(state.ups,s.ups||{}); Object.assign(state.achv,s.achv||{});
+    Object.assign(state.unlocked,s.unlocked||{}); state.heat=s.heat||0; state.passports=s.passports||0;
+    state.pastEarned=s.pastEarned||0; state.lastSeen=s.lastSeen||Date.now(); state.busted=!!s.busted; Object.assign(state.bribeOwned,s.bribeOwned||{}); state.refBonusUntil=s.refBonusUntil||0; state.fedHeat=s.fedHeat||0; state.fbiSeen=!!s.fbiSeen; state.fbiEvaded=s.fbiEvaded||0; state.everReferred=!!s.everReferred; state.fbiIdx=s.fbiIdx||0; state.fbiSkips=s.fbiSkips||0; return true; }catch(e){ return false; } }
+  function fmtTime(sec){ if(sec<3600) return Math.max(1,Math.floor(sec/60))+" min"; return (sec/3600).toFixed(1)+" hrs"; }
+  function applyOffline(){
+    const elapsed=Math.max(0,(Date.now()-state.lastSeen)/1000); const rate=cps();
+    if(rate<=0||elapsed<60) return;
+    const capped=Math.min(elapsed,8*3600); const earn=rate*capped*0.5;
+    if(earn<1) return; state.bank+=earn; state.earned+=earn; track("offline_return",{secs:Math.round(capped)});
+    setTimeout(()=>showToast("✈️ Away "+fmtTime(capped)+" — your crew laundered +$"+fmt(earn)),800);
+  }
+
+  function showToast(msg){ toast.textContent=msg; toast.classList.add("show"); clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove("show"),2300); }
+
+  // ---------------- AUDIO ----------------
+  const SFX={tap:"assets/sfx_tap.mp3",swipe:"assets/sfx_swipe.mp3",golden:"assets/sfx_golden.mp3",upgrade:"assets/sfx_upgrade.mp3",prestige:"assets/sfx_prestige.mp3",bust:"assets/sfx_bust.mp3",bribe:"assets/sfx_bribe.mp3",kaching:"assets/sfx_kaching.mp3"};
+  const VOL={tap:0.4,swipe:0.5,golden:0.72,upgrade:0.55,prestige:0.78,bust:0.72,bribe:0.5,kaching:0.6};
+  const _au={}; let muted=false, _lastTapSfx=0;
+  let musicMellow=null, musicFunk=null, _musicOn=false, intensity=0, _mixFunk=0, _wantFunk=0; const MUSIC_BASE=0.34;
+  function initAudio(){ for(const k in SFX){ const a=new Audio(SFX[k]); a.preload="auto"; a.volume=VOL[k]; _au[k]=a; }
+    musicMellow=new Audio("assets/music_mellow.mp3"); musicMellow.loop=true; musicMellow.preload="auto"; musicMellow.volume=MUSIC_BASE;
+    musicFunk=new Audio("assets/music_funk.mp3"); musicFunk.loop=true; musicFunk.preload="auto"; musicFunk.volume=0; }
+  function _playA(a){ if(!a) return; const p=a.play(); if(p&&p.catch) p.catch(()=>{}); }
+  function startMusic(){ if(muted){ return; } if(!_musicOn){ _musicOn=true; _playA(musicMellow); _playA(musicFunk); } applyMusicMix(); }
+  function applyMusicMix(){ if(!musicMellow||!musicFunk) return;
+    if(muted){ if(!musicMellow.paused) musicMellow.pause(); if(!musicFunk.paused) musicFunk.pause(); musicMellow.volume=0; musicFunk.volume=0; return; }
+    const f=Math.max(0,Math.min(1,_mixFunk));
+    musicFunk.volume=MUSIC_BASE*f; musicMellow.volume=MUSIC_BASE*(1-f);
+    if(_musicOn){
+      if(f<=0.02){ if(!musicFunk.paused) musicFunk.pause(); } else if(musicFunk.paused){ const p=musicFunk.play(); if(p&&p.catch) p.catch(()=>{}); }
+      if(f>=0.98){ if(!musicMellow.paused) musicMellow.pause(); } else if(musicMellow.paused){ const p=musicMellow.play(); if(p&&p.catch) p.catch(()=>{}); }
+    } }
+  function play(k){ if(muted||!_au[k]) return;
+    if(k==="tap"){ const n=performance.now(); if(n-_lastTapSfx<60) return; _lastTapSfx=n; }
+    try{ const a=_au[k].cloneNode(); a.volume=VOL[k]; const p=a.play(); if(p&&p.catch) p.catch(()=>{}); }catch(e){} }
+  function setMuted(m){ muted=m; const b=$("sound"); if(b) b.textContent=muted?"🔇":"🔊";
+    if(musicMellow&&musicFunk){ if(muted){ musicMellow.pause(); musicFunk.pause(); } else { if(_musicOn) applyMusicMix(); else startMusic(); } }
+    try{localStorage.setItem("chdm_mute",muted?"1":"0");}catch(e){} }
+  // ---------------- FULLSCREEN / STANDALONE ----------------
+  let _fsTried=false;
+  function tryFullscreen(){ if(_fsTried) return; _fsTried=true;
+    const el=document.documentElement; const req=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(req){ try{ const p=req.call(el); if(p&&p.then) p.then(()=>{ try{ if(screen.orientation&&screen.orientation.lock) screen.orientation.lock("portrait").catch(()=>{}); }catch(e){} }).catch(()=>{}); }catch(e){} } }
+  function firstGesture(){ tryFullscreen(); startMusic(); }
+
+  // ---------------- ANALYTICS: owned, vendor-agnostic seam (anonymous, no PII) ----------------
+  const A_CID=(function(){ try{ let c=localStorage.getItem("chdm_cid"); const isNew=!c;
+    if(!c){ c="c"+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); localStorage.setItem("chdm_cid",c); }
+    return {cid:c,isNew}; }catch(e){ return {cid:"anon",isNew:false}; } })();
+  let _evq=[], _sessStart=Date.now();
+  function track(ev,props){ try{ _evq.push({e:ev,p:props||{},t:Date.now()}); if(_evq.length>=12) flushTrack(false); }catch(e){} }
+  function trackOnce(flag,ev,props){ try{ if(localStorage.getItem("chdm_ev_"+flag)) return; localStorage.setItem("chdm_ev_"+flag,"1"); }catch(e){} track(ev,props); }
+  function flushTrack(beacon){ if(!_evq.length) return; const batch={cid:A_CID.cid,ev:_evq.splice(0,_evq.length)}; const b=JSON.stringify(batch);
+    try{ if(beacon&&navigator.sendBeacon){ navigator.sendBeacon("/api/track", new Blob([b],{type:"application/json"})); }
+      else { fetch("/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:b,keepalive:true}).catch(()=>{}); } }catch(e){}
+    try{ if(window.va&&window.va.track) batch.ev.forEach(x=>window.va.track(x.e,x.p)); }catch(e){} }
+  setInterval(()=>flushTrack(false),20000);
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden){ track("session_end",{secs:Math.round((Date.now()-_sessStart)/1000)}); flushTrack(true);} });
+  window.addEventListener("pagehide",()=>{ track("session_end",{secs:Math.round((Date.now()-_sessStart)/1000)}); flushTrack(true); });
+
+  // ---------------- BUY ----------------
+  function buy(id){
+    const o=OPS.find(x=>x.id===id); const c=opCost(o);
+    if(state.bank<c) return;
+    state.bank-=c; state.owned[id]++; addHeat(1.2);
+    const idx=OPS.indexOf(o);
+    if(idx+1<OPS.length&&!state.unlocked[OPS[idx+1].id]){ state.unlocked[OPS[idx+1].id]=true; showToast("Unlocked: "+OPS[idx+1].name+" "+OPS[idx+1].icon); }
+    if(o.hand) syncHands();
+    track("op_buy",{id:id});
+    play("upgrade");
+    if(navigator.vibrate) navigator.vibrate(8);
+    render();
+  }
+  function buyUp(id){
+    const u=UPGRADES.find(x=>x.id===id); if(state.ups[id]||state.bank<u.cost) return;
+    state.bank-=u.cost; state.ups[id]=true; addHeat(2);
+    track("perk_buy",{id:id});
+    play("kaching");
+    showToast(u.icon+" "+u.name+" acquired");
+    if(navigator.vibrate) navigator.vibrate([8,30,8]);
+    render();
+  }
+
+  // ---------------- HEAT ----------------
+  const HEAT_BANDS=[[0,"the authorities suspect nothing."],[15,"a detective glances your way…"],
+    [30,"someone filed a 'suspicious activity report.'"],[50,"the feds opened a case file. allegedly."],
+    [70,"helicopters? probably unrelated."],[88,"INTERPOL has a folder with your name on it."],
+    [100,"🚨 you are a legend of financial crime."]];
+  function addHeat(x){ if(x>0) x*=heatGainMult(); state.heat=Math.max(0,Math.min(100,state.heat+x)); }
+  function heatText(){ let t=HEAT_BANDS[0][1]; for(const [thr,m] of HEAT_BANDS) if(state.heat>=thr) t=m; return t; }
+
+  // ---------------- FX (object-pooled + hard-capped; GPU transforms) ----------------
+  const _fxPool={};
+  function _fxGet(cls){ const a=_fxPool[cls]||(_fxPool[cls]=[]); const n=a.pop()||document.createElement("div"); n.className=cls; return n; }
+  function _fxPut(cls,n){ const a=_fxPool[cls]||(_fxPool[cls]=[]); if(a.length<48) a.push(n); }
+  function _fxSpawn(parent,cap,cls,x,y,vars,text,life){
+    if(parent.childElementCount>=cap) return;
+    const n=_fxGet(cls); if(text!=null) n.textContent=text;
+    n.style.cssText="left:"+x+"px;top:"+y+"px";
+    if(vars) for(const k in vars) n.style.setProperty(k,vars[k]);
+    n.style.animation="none"; parent.appendChild(n); void n.offsetWidth; n.style.animation="";
+    clearTimeout(n._t); n._t=setTimeout(()=>{ if(n.parentNode) n.parentNode.removeChild(n); _fxPut(cls,n); }, life);
+  }
+  function spawnPop(x,y,txt,gold){ _fxSpawn(fx,CONFIG.fxCap,gold?"pop gold":"pop",x,y,null,txt,1000); }
+  const BILLS=["💵","💴","💶","💷","🤑"];
+  function spawnBill(x,y){ _fxSpawn(fx,CONFIG.fxCap,"bill",x,y,{"--x":((Math.random()*160-80)|0)+"px","--y":(-(150+Math.random()*150)|0)+"px","--r2":((Math.random()*120-60)|0)+"deg","--d":(1.6+Math.random()*1.1).toFixed(2)+"s"},BILLS[(Math.random()*BILLS.length)|0],2900); }
+  function spawnFlip(x,y){ _fxSpawn(fx,CONFIG.fxCap,"flip",x,y,null,"💵",600); }
+  function spawnSpark(x,y,n){ n=n||4; for(let i=0;i<n;i++){ const a=Math.random()*6.283,d=18+Math.random()*28; _fxSpawn(fx,CONFIG.fxCap,"spark",x,y,{"--sx":((Math.cos(a)*d)|0)+"px","--sy":((Math.sin(a)*d)|0)+"px"},"✦",650); } }
+
+  // ---------------- MAIN HAND FRAMES ----------------
+  let frameIdx=0, lastCountT=0, _ovlTop=true; let _tapInc=0, _psvInc=0;
+  function setFrame(i){ frameIdx=((i%FRAMES.length)+FRAMES.length)%FRAMES.length;
+    const incoming=_ovlTop?ovlB:ovlA, outgoing=_ovlTop?ovlA:ovlB;
+    incoming.src=FRAMES[frameIdx]; incoming.classList.add("on"); outgoing.classList.remove("on"); _ovlTop=!_ovlTop; }
+
+  // ---------------- HELPER HANDS ----------------
+  const HAND_POS=[ [13,17],[87,17],[13,37],[87,37],[13,57],[87,57],[13,77],[87,77],[31,91],[69,91] ];
+  const helperEls=[];
+  function syncHands(){
+    const want=Math.min(state.owned.hands, CONFIG.maxHelperSprites, HAND_POS.length);
+    while(helperEls.length<want){
+      const i=helperEls.length; const [px,py]=HAND_POS[i];
+      const el=document.createElement("div"); el.className="helper"; el.style.left=px+"%"; el.style.top=py+"%";
+      const img=document.createElement("img"); img.src=HFRAMES[0]; img.draggable=false; el.appendChild(img);
+      const cuff=document.createElement("div"); cuff.className="cuff"; cuff.textContent="⛓️"; el.appendChild(cuff);
+      if(state.busted) el.classList.add("cuffed");
+      el._img=img; el._fi=0;
+      el.addEventListener("pointerdown",ev=>{ ev.preventDefault(); ev.stopPropagation(); helperTap(el,ev.clientX,ev.clientY); },{passive:false});
+      handsLayer.appendChild(el); helperEls.push(el);
+    }
+  }
+  function cycleHelper(el){ el._fi=(el._fi+1)%HFRAMES.length; el._img.src=HFRAMES[el._fi]; }
+  function helperTap(el,cx,cy){
+    if(state.busted) return;
+    const bonus=Math.max(2, Math.floor(tapValue()*CONFIG.helperTapMult));
+    state.bank+=bonus; state.earned+=bonus; _tapInc+=bonus; state.taps++; addHeat(0.06);
+    cycleHelper(el); el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+    play("tap");
+    const r=scene.getBoundingClientRect(); spawnPop(cx-r.left,cy-r.top,"+$"+fmt(bonus));
+    spawnBill(cx-r.left,cy-r.top);
+    if(navigator.vibrate) navigator.vibrate(7);
+  }
+
+  // ---------------- TAP + SWIPE on main scene ----------------
+  let hintGone=false;
+  function killHint(){ if(!hintGone){ hint.style.opacity="0"; hintGone=true; setTimeout(()=>hint&&hint.remove(),500); } }
+  function countOnce(cx,cy,flip){
+    if(state.busted) return;
+    trackOnce("firsttap","first_tap");
+    const v = flip ? Math.max(1, Math.floor(tapValue()*CONFIG.swipeFactor)) : tapValue();
+    state.bank+=v; state.earned+=v; _tapInc+=v; state.taps++; addHeat(0.05);
+    lastCountT=performance.now();
+    const r=scene.getBoundingClientRect(); const x=cx-r.left, y=cy-r.top;
+    if(flip){ spawnFlip(x,y); if(Math.random()<0.4) spawnSpark(x,y,2); } else { spawnPop(x,y,"+$"+fmt(v)); spawnBill(x,y); spawnSpark(x,y,5); if(Math.random()<0.5) spawnBill(x+(Math.random()*40-20),y); }
+    killHint();
+  }
+  let down=false, startX=0, startY=0, startT=0, moved=0, swipeAccum=0, lastX=0, lastY=0, playedSwipe=false;
+  const SWIPE_STEP=26, TAP_SLOP=12;
+  scene.addEventListener("pointerdown",e=>{
+    if(state.busted) return;
+    e.preventDefault(); down=true; startX=lastX=e.clientX; startY=lastY=e.clientY; startT=performance.now(); moved=0; swipeAccum=0; playedSwipe=false;
+    try{ scene.setPointerCapture(e.pointerId); }catch(_){}
+  },{passive:false});
+  scene.addEventListener("pointermove",e=>{
+    if(!down) return; e.preventDefault();
+    const dx=e.clientX-lastX, dy=e.clientY-lastY; const d=Math.hypot(dx,dy);
+    moved+=d; swipeAccum+=d; lastX=e.clientX; lastY=e.clientY;
+    while(swipeAccum>=SWIPE_STEP){ swipeAccum-=SWIPE_STEP; countOnce(e.clientX,e.clientY,true);
+      if(!playedSwipe){ playedSwipe=true; play("swipe"); }
+      scene.classList.remove("tapped"); void scene.offsetWidth; scene.classList.add("tapped");
+      if(navigator.vibrate) navigator.vibrate(4); }
+  },{passive:false});
+  function endPtr(e){
+    if(!down) return; down=false;
+    const dt=performance.now()-startT;
+    if(moved<TAP_SLOP && dt<400){ // it was a tap
+      scene.classList.remove("tapped"); void scene.offsetWidth; scene.classList.add("tapped");
+      countOnce(e.clientX!=null?e.clientX:startX, e.clientY!=null?e.clientY:startY, false);
+      play("tap");
+      if(navigator.vibrate) navigator.vibrate(6);
+    }
+    render();
+  }
+  scene.addEventListener("pointerup",e=>{e.preventDefault();endPtr(e);},{passive:false});
+  scene.addEventListener("pointercancel",e=>{down=false;},{passive:false});
+  // old-iOS fallback
+  if(!window.PointerEvent){
+    scene.addEventListener("touchstart",e=>{e.preventDefault();const t=e.changedTouches[0];down=true;startX=lastX=t.clientX;startY=lastY=t.clientY;startT=performance.now();moved=0;swipeAccum=0;},{passive:false});
+    scene.addEventListener("touchmove",e=>{if(!down)return;e.preventDefault();const t=e.changedTouches[0];const dx=t.clientX-lastX,dy=t.clientY-lastY,d=Math.hypot(dx,dy);moved+=d;swipeAccum+=d;lastX=t.clientX;lastY=t.clientY;while(swipeAccum>=SWIPE_STEP){swipeAccum-=SWIPE_STEP;countOnce(t.clientX,t.clientY,true);}},{passive:false});
+    scene.addEventListener("touchend",e=>{e.preventDefault();const t=e.changedTouches[0];endPtr(t);},{passive:false});
+  }
+  document.addEventListener("gesturestart",e=>e.preventDefault());
+  document.addEventListener("dblclick",e=>e.preventDefault(),{passive:false});
+
+  // ---------------- GOLDEN BRIEFCASE (golden cookie analog) ----------------
+  function scheduleGoldie(){ const wait=24000+Math.random()*46000; setTimeout(spawnGoldie,wait); }
+  function spawnGoldie(){
+    const pad=60; goldie.style.left=(pad+Math.random()*(innerWidth-2*pad))+"px";
+    goldie.style.top=(innerHeight*0.22+Math.random()*innerHeight*0.5)+"px";
+    goldie.style.display="block";
+    const ttl=setTimeout(()=>{ goldie.style.display="none"; scheduleGoldie(); },11000);
+    goldie._ttl=ttl;
+  }
+  goldie.addEventListener("pointerdown",e=>{
+    e.preventDefault(); clearTimeout(goldie._ttl); goldie.style.display="none"; state.deals++; play("golden");
+    const roll=Math.random();
+    if(roll<0.6){ // FRENZY ×7 for 15s
+      state.frenzyMult=7; state.frenzyUntil=performance.now()+15000;
+      multBadge.style.display="block"; showToast("💼 DIRTY DEAL — FRENZY ×7 for 15s!");
+    } else { // lump sum: ~ 8 min of cps or 13x current bank-ish, min $50
+      const lump=Math.max(50, Math.max(cps()*420, state.earned*0.10));
+      state.bank+=lump; state.earned+=lump; showToast("💼 Briefcase of cash: +$"+fmt(lump));
+      const r=scene.getBoundingClientRect(); spawnPop(r.width/2,r.height/2,"+$"+fmt(lump),true);
+    }
+    addHeat(4); if(navigator.vibrate) navigator.vibrate([10,40,10,40,10]);
+    { const r2=scene.getBoundingClientRect(); spawnSpark(r2.width/2,r2.height/2,10); }
+    scheduleGoldie(); render();
+  },{passive:false});
+
+  // ---------------- ACHIEVEMENTS ----------------
+  function checkAch(){ for(const a of ACH){ if(!state.achv[a.id]&&a.test(state)){ state.achv[a.id]=true; track("achievement",{id:a.id}); showToast("🏅 Rep unlocked: "+a.name); } } }
+
+  // ---------------- CASH RAIN ----------------
+  let rainAccum=0;
+  function spawnRainBill(){
+    if(rain.childElementCount>=CONFIG.rainCap) return;
+    const b=_fxGet("rainbill"); b.textContent=BILLS[(Math.random()*BILLS.length)|0]; const dur=(5+Math.random()*5);
+    b.style.cssText="left:"+(Math.random()*100)+"vw;font-size:"+(16+Math.random()*22)+"px;opacity:"+(0.25+Math.random()*0.4).toFixed(2);
+    b.style.setProperty("--spin",((Math.random()*720-360)|0)+"deg"); b.style.animationDuration=dur+"s";
+    b.style.animation="none"; rain.appendChild(b); void b.offsetWidth; b.style.animation="";
+    clearTimeout(b._t); b._t=setTimeout(()=>{ if(b.parentNode) b.parentNode.removeChild(b); _fxPut("rainbill",b); }, dur*1000+200);
+  }
+  for(let i=0;i<6;i++) setTimeout(spawnRainBill,i*400); // seed
+  const pileLayer=$("pile"); const pileEls=[];
+  function pileTarget(){ const e=Math.max(0, Math.floor(Math.log10(state.earned+1))-2); return Math.min(CONFIG.pileMax, e*2); }
+  function updatePile(){ if(!pileLayer||_sheetOpen) return; const t=pileTarget();
+    while(pileEls.length<t){ const i=pileEls.length; const el=document.createElement("div"); el.className="pilebill"; el.textContent=Math.random()<0.32?"🪙":"💵";
+      el.style.left=(5+(i*41)%86)+"%"; el.style.bottom=((i%5)*6)+"px"; el.style.transform="rotate("+((Math.random()*30-15)|0)+"deg)";
+      pileLayer.appendChild(el); pileEls.push(el); }
+    while(pileEls.length>t){ const el=pileEls.pop(); if(el&&el.parentNode) el.parentNode.removeChild(el); } }
+
+  // ---------------- RENDER ----------------
+  let displayBank=0;
+  function render(){
+    for(const o of OPS){ const r=rows[o.id],n=state.owned[o.id],c=opCost(o);
+      if(!state.unlocked[o.id]){ r.el.classList.add("locked"); r.el.classList.remove("afford"); continue; }
+      r.el.classList.remove("locked"); r.el.classList.toggle("afford",state.bank>=c); r.el.classList.toggle("cant",state.bank<c);
+      r.cost.textContent="$"+fmt(c); if(n>0){r.ct.style.display="";r.ct.textContent=n;} else r.ct.style.display="none"; }
+    let upOwned=0;
+    for(const u of UPGRADES){ const r=upRows[u.id];
+      if(state.ups[u.id]){ r.el.classList.add("owned-up"); r.el.classList.remove("afford","locked"); r.cost.textContent="OWNED"; upOwned++; continue; }
+      const show=state.bank>=u.cost*0.35; r.el.classList.toggle("locked",!show);
+      r.el.classList.toggle("afford",state.bank>=u.cost); r.el.classList.toggle("cant",state.bank<u.cost && show); }
+    $("upBadge").textContent=upOwned;
+    let achN=0; for(const a of ACH){ if(state.achv[a.id]){ achRows[a.id].classList.remove("locked"); achN++; } }
+    $("achBadge").textContent=achN+"/"+ACH.length;
+    cpsEl.textContent="$"+fmt(cps()); tapvEl.textContent="$"+fmt(tapValue()); { const _sc=$("sheetCash"); if(_sc) _sc.textContent="$"+fmt(state.bank); }
+    const c=cps(); badge.textContent=state.busted?"🚔 FROZEN":(c>0?("$"+fmt(c)+"/s"):"idle");
+    heatFill.style.width=state.heat.toFixed(1)+"%"; heatPct.textContent=Math.floor(state.heat)+"%"; heatStatus.textContent=state.busted?"BUSTED — pay bail or cool down.":heatText();
+    heatFill.style.boxShadow="0 0 "+(3+state.heat*0.16).toFixed(0)+"px rgba(255,122,60,"+(0.18+state.heat/170).toFixed(2)+")";
+    { const fs=$("fedstatus"); if(fs){ const idx=state.fbiIdx; if(idx<CONFIG.fbiMilestones.length && state.earned>=CONFIG.fbiMilestones[idx]*0.25){ const next=CONFIG.fbiMilestones[idx]; const risky=state.heat>=CONFIG.fbiHeatGate; fs.style.display="flex"; fs.className="fedstatus "+(risky?"risky":"clear"); fs.innerHTML="🕵️ FBI next check <b>$"+fmt(next)+"</b> · "+(risky?"heat RISKY ⚠":"clear ✓"); } else fs.style.display="none"; } }
+    for(const b of BRIBES){ const r=briRows[b.id], cc=bribeCost(b);
+      r.el.classList.toggle("afford",state.bank>=cc); r.el.classList.toggle("cant",state.bank<cc); r.cost.textContent="$"+fmt(cc);
+      const n=state.bribeOwned[b.id]; if(b.type!=="dump"&&n>0){ r.ct.style.display=""; r.ct.textContent="Lv"+n; } else r.ct.style.display="none"; }
+    if(state.busted){ const bb=$("bailBtn"); if(bb) bb.textContent="POST BAIL  −$"+fmt(bailFine()); }
+    const tot=totalPassports(), pend=pendingPassports(); const eb=$("escBadge"); if(eb) eb.textContent=state.passports;
+    const nextReq=ppReq(tot+1), prevReq=ppReq(tot);
+    const prog=Math.max(0,Math.min(1,(lifetime()-prevReq)/(nextReq-prevReq)));
+    const pf=$("ppFill"); if(pf){ pf.style.width=(prog*100).toFixed(1)+"%"; pf.style.boxShadow="0 0 "+(3+prog*16).toFixed(0)+"px rgba(20,241,149,"+(0.18+prog*0.5).toFixed(2)+")"; }
+    const ei=$("escInfo"); if(ei) ei.innerHTML = pend>=1
+      ? "<b style='color:var(--green-bright)'>READY TO FLEE</b> — bank <b style='color:var(--gold)'>"+pend+"</b> passport"+(pend>1?"s":"")+" (+"+(pend*3)+"% forever) and relocate. You hold "+state.passports+" (+"+(state.passports*3)+"%)."
+      : "Lifetime <b style='color:var(--gold)'>$"+fmt(lifetime())+"</b> / <b>$"+fmt(nextReq)+"</b> to your next passport. You hold "+state.passports+" (+"+(state.passports*3)+"%).";
+    const fb=$("fleeBtn"); if(fb){ fb.classList.toggle("ready",pend>=1); fb.classList.toggle("locked2",pend<1); }
+    const _rb=(state.refBonusUntil||0)-Date.now(); const _rs=$("refspan");
+    if(_rs) _rs.innerHTML = _rb>0 ? " &nbsp;·&nbsp; <b style=\'color:var(--green-bright)\'>🤝2× "+Math.floor(_rb/60000)+":"+String(Math.floor(_rb/1000)%60).padStart(2,"0")+"</b>" : "";
+  }
+
+  // ---------------- NETWORKING: price ticker, referral, wallet ----------------
+  const TOKEN_MINT="6jb4XWggYJjoo3fx7irPVxhNiuFbHUyVyKR8mBL8pump";
+  async function pollPrice(){ try{
+    const r=await fetch("https://api.dexscreener.com/latest/dex/tokens/"+TOKEN_MINT,{cache:"no-store"});
+    if(!r.ok) throw 0; const j=await r.json();
+    const pairs=(j.pairs||[]).slice().sort((a,b)=>((b.liquidity&&b.liquidity.usd)||0)-((a.liquidity&&a.liquidity.usd)||0));
+    const p=pairs[0]; const el=$("ticker"); if(!el) return;
+    if(p&&p.priceUsd){ const sym=(p.baseToken&&p.baseToken.symbol)||"TOKEN"; const pr=parseFloat(p.priceUsd);
+      const ch=p.priceChange&&p.priceChange.h24;
+      const prTxt = pr>=1?("$"+pr.toFixed(3)):("$"+pr.toPrecision(3));
+      const chTxt = (ch!=null)?(" <span class='"+(ch>=0?"up":"down")+"'>"+(ch>=0?"▲":"▼")+Math.abs(ch).toFixed(1)+"%</span>"):"";
+      el.innerHTML="$"+sym+" <b>"+prTxt+"</b>"+chTxt+" · tap to buy";
+    } else { el.textContent="$CLEAN — price unavailable · tap to buy"; }
+  }catch(e){ const el=$("ticker"); if(el) el.textContent="price feed offline · tap to buy"; } }
+
+  function refMult(){ return Date.now()<(state.refBonusUntil||0)?2:1; }
+  function grantRefBonus(reason){ const base=Math.max(state.refBonusUntil||0, Date.now()); state.refBonusUntil=base+30*60000; if(reason==="friend") state.everReferred=true; save();
+    showToast(reason==="welcome"?"🤝 Welcome! 2× income for 30 min!":"🤝 A friend joined — 2× income for 30 min!"); }
+  function captureRef(){ try{
+    const m=location.search.match(/[?&]ref=([A-Za-z0-9_-]{4,24})/); if(!m) return; const ref=m[1];
+    if(ref===state.refCode) return; if(localStorage.getItem("chdm_reffed")) return;
+    localStorage.setItem("chdm_reffed","1"); track("ref_visit",{}); grantRefBonus("welcome");
+    fetch("/api/ref?action=refer&ref="+encodeURIComponent(ref)+"&nid="+encodeURIComponent(state.refCode)).catch(()=>{});
+  }catch(e){} }
+  async function claimRef(){ try{ const r=await fetch("/api/ref?action=claim&code="+encodeURIComponent(state.refCode)); const j=await r.json(); if(j&&j.ok&&j.pending>0) grantRefBonus("friend"); }catch(e){} }
+  async function refStats(){ try{ const r=await fetch("/api/ref?action=stats&code="+encodeURIComponent(state.refCode)); const j=await r.json(); const el=$("refstats"); if(el&&j&&j.ok) el.innerHTML="Friends joined: <b style='color:var(--gold)'>"+(j.total||0)+"</b>"; }catch(e){} }
+  function closeModal(){ $("modal").classList.remove("on"); }
+  function copyLink(link){ try{ navigator.clipboard.writeText(link); }catch(e){} showToast("Link copied"); }
+  function openInvite(){ const link=location.origin+location.pathname+"?ref="+state.refCode;
+    $("modalcard").innerHTML='<span class="mclose" id="mx">✕</span><h3>🤝 Invite a partner</h3>'+
+      '<p>Share your link. When a friend starts the game through it, <b style="color:var(--green-bright)">you BOTH get 2× income for 30 minutes</b>.</p>'+
+      '<input class="lnk" id="reflink" readonly value="'+link+'">'+
+      '<p id="refstats">Friends joined: <b style="color:var(--gold)">…</b></p>'+
+      '<div class="mbtn" id="shareBtn">Share my link</div><div class="mbtn alt" id="copyBtn">Copy link</div>';
+    $("modal").classList.add("on");
+    $("mx").onclick=closeModal;
+    $("shareBtn").onclick=function(){ if(navigator.share){ navigator.share({title:"Clean Hands, Dirty Money",text:"Launder with me — we both get 2× income!",url:link}).catch(()=>{}); } else copyLink(link); };
+    $("copyBtn").onclick=function(){ const el=$("reflink"); if(el&&el.select){el.select();} copyLink(link); };
+    refStats(); }
+  let _wallet=null;
+  const _isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  async function connectWallet(){
+    track("wallet_connect_click",{mobile:_isMobile});
+    const prov=window.solana||(window.phantom&&window.phantom.solana);
+    if(prov&&prov.isPhantom){
+      try{ const resp=await prov.connect(); _wallet=resp.publicKey.toString(); const w=$("walletAddr"); if(w){ w.style.display=""; w.textContent="Connected: "+_wallet.slice(0,4)+"…"+_wallet.slice(-4); } const c=$("connectBtn"); if(c) c.textContent="Wallet connected ✓"; showToast("Phantom connected"); }
+      catch(e){ showToast("Connection cancelled"); }
+      return;
+    }
+    if(_isMobile){
+      // No injected provider in mobile Safari/Chrome -> open this dapp INSIDE Phantom's in-app browser
+      // (where window.solana exists), via Phantom's universal link. User taps connect again in-app.
+      const dapp=location.href.split("#")[0];
+      const link="https://phantom.app/ul/browse/"+encodeURIComponent(dapp)+"?ref="+encodeURIComponent(location.origin);
+      track("phantom_deeplink",{}); showToast("Opening in Phantom…");
+      window.location.href=link;
+      return;
+    }
+    // desktop without the extension
+    window.open("https://phantom.app/download","_blank","noopener");
+    showToast("Install the Phantom extension to connect");
+  }
+  function openTrade(){ $("modalcard").innerHTML='<span class="mclose" id="mx2">✕</span><h3>💳 Buy $CLEAN · Solana</h3>'+
+      '<p>Real on-chain money. You confirm <b>every</b> purchase in your own wallet — the game never holds keys, never auto-buys, never moves funds.</p>'+
+      '<div class="mbtn" id="connectBtn">Connect Phantom</div><p id="walletAddr" style="display:none;font-size:11px;color:var(--green-bright)"></p>'+
+      '<div class="mbtn alt" id="buyBtn">Buy on pump.fun ↗</div>'+
+      '<p style="font-size:10px;color:#6f93b1">Token: '+TOKEN_MINT.slice(0,6)+"…"+TOKEN_MINT.slice(-4)+'</p>';
+    $("modal").classList.add("on");
+    $("mx2").onclick=closeModal;
+    $("connectBtn").onclick=connectWallet;
+    $("buyBtn").onclick=function(){ track("buy_click",{}); window.open("https://pump.fun/coin/"+TOKEN_MINT,"_blank","noopener"); };
+  }
+  $("modal").addEventListener("click",e=>{ if(e.target===$("modal")) closeModal(); });
+
+  // ---------------- MAIN LOOP: income + ambient rain + bank rollup (resilient) ----------------
+  let last=performance.now(), billAccum=0;
+  function loop(now){
+    try{
+      const dt=Math.min(0.1,(now-last)/1000); last=now;
+      if(state.frenzyMult>1 && now>state.frenzyUntil){ state.frenzyMult=1; multBadge.style.display="none"; }
+      const c=cps();
+      if(c>0 && !state.busted){
+        const gain=c*dt; state.bank+=gain; state.earned+=gain; _psvInc+=gain;
+        addHeat(0.02*dt*Math.min(10,Math.log10(c+10)));
+        billAccum+=dt*Math.min(9,1.1*Math.log10(c+10));
+        const r=scene.getBoundingClientRect();
+        while(billAccum>=1){ billAccum-=1; if(!_sheetOpen) spawnBill(r.width*(0.30+Math.random()*0.40), r.height*(0.60+Math.random()*0.20)); }
+      }
+      const rainI = 0.5 + Math.min(7, Math.log10((state.busted?0:c)+10));
+      rainAccum += dt*rainI;
+      while(rainAccum>=1){ rainAccum-=1; if(!_sheetOpen) spawnRainBill(); }
+      displayBank+=(state.bank-displayBank)*Math.min(1,dt*8);
+      if(Math.abs(state.bank-displayBank)<0.5) displayBank=state.bank;
+      bankNum.textContent=fmtInt(displayBank);
+    }catch(e){}
+    requestAnimationFrame(loop);
+  }
+
+  // ---------------- ANIMATION + ADAPTIVE MUSIC (timer-driven; survives rAF throttling/stalls) ----------------
+  let _animLast=performance.now(), _frameAcc=0, _helperAcc=0;
+  function animTick(){
+    try{
+      const now=performance.now(); const dms=Math.min(1000, now-_animLast); _animLast=now;
+      const c = state.busted?0:cps();
+      const active = (now-lastCountT)<900 && !state.busted;
+      // central counting hands: keep moving (slow when idle) so they never look frozen; pause only during a bust
+      const cad = active ? 140 : (state.busted ? 1e9 : (c>0 ? Math.max(420, 950-Math.log10(c+1)*100) : 1050));
+      _frameAcc += dms; if(_frameAcc>=cad && !_sheetOpen){ _frameAcc=0; setFrame(frameIdx+1); }
+      // extra hands keep counting too
+      _helperAcc += dms; if(_helperAcc>=(active?170:300)){ _helperAcc=0; if(state.owned.hands>0 && !state.busted && !_sheetOpen){ for(const el of helperEls) cycleHelper(el); } }
+      // music intensity from tap/swipe recency + heat + income -> audible mellow<->funk crossfade
+      const actN = (now-lastCountT)<1500 ? 1 : 0;
+      const target = state.busted ? 0 : Math.max(actN, (state.heat/100)*0.6, Math.min(1, Math.log10(c+1)/6));
+      intensity += (target-intensity)*Math.min(1, dms/350);
+      if(intensity>0.55) _wantFunk=1; else if(intensity<0.30) _wantFunk=0;
+      _mixFunk += (_wantFunk-_mixFunk)*Math.min(1, dms/400);
+      applyMusicMix();
+    }catch(e){}
+  }
+  setInterval(animTick, 110);
+  setInterval(()=>{ if(_tapInc>0||_psvInc>0){ track("econ",{tap:Math.round(_tapInc),psv:Math.round(_psvInc)}); _tapInc=0; _psvInc=0; } }, CONFIG.econEmitMs);
+
+  setInterval(()=>{ try{
+    if(!state.busted && state.heat>=100) triggerBust();
+    else if(state.busted){ state.heat=Math.max(0,state.heat-2.7); if(state.heat<=50) liftBust(); }
+    else if(coolRate()>0) state.heat=Math.max(0,state.heat-coolRate()*0.3);
+    fbiCheck();
+    checkAch(); render(); updatePile();
+    displayBank+=(state.bank-displayBank)*0.5; if(Math.abs(state.bank-displayBank)<0.5) displayBank=state.bank;
+    bankNum.textContent=fmtInt(displayBank);
+  }catch(e){} },300);
+
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ last=performance.now(); _animLast=performance.now(); } });
+
+  // prevent page scroll except inside shop
+  document.addEventListener("touchmove",e=>{ if(e.target.closest(".ops")) return; e.preventDefault(); },{passive:false});
+
+  (function(){ const bl=document.getElementById("bubbles"); if(bl){ for(let i=0;i<6;i++){ const sp=document.createElement("i"); const sz=10+Math.random()*30;
+    sp.style.width=sz+"px"; sp.style.height=sz+"px"; sp.style.left=(Math.random()*100)+"vw";
+    sp.style.setProperty("--d",(7+Math.random()*9).toFixed(1)+"s"); sp.style.setProperty("--w",(-Math.random()*12).toFixed(1)+"s");
+    sp.style.setProperty("--dx",((Math.random()*60-30)|0)+"px"); bl.appendChild(sp); } } })();
+  initAudio();
+  try{ if(localStorage.getItem("chdm_mute")==="1") muted=true; }catch(e){}
+  $("sound").textContent=muted?"🔇":"🔊";
+  $("sound").addEventListener("click",()=>setMuted(!muted));
+  document.addEventListener("pointerdown",firstGesture,{once:true});
+  try{ state.refCode=localStorage.getItem("chdm_refcode")||""; }catch(e){}
+  if(!state.refCode){ state.refCode=(Math.random().toString(36).slice(2,10)+"00000000").slice(0,8); try{localStorage.setItem("chdm_refcode",state.refCode);}catch(e){} }
+  load(); syncHands(); applyOffline(); setLocale();
+  state.fbiIdx=Math.max(state.fbiIdx||0, CONFIG.fbiMilestones.filter(function(m){return state.earned>=m;}).length);
+  LOCALES.forEach(L=>{const im=new Image(); im.src=L.bg;});
+  $("bailBtn").addEventListener("click",postBail);
+  $("cmCancel").addEventListener("click",closeResetModal);
+  $("cmConfirm").addEventListener("click",hardReset);
+  $("cmodal").addEventListener("click",function(e){ if(e.target===$("cmodal")) closeResetModal(); });
+  $("invite").addEventListener("click",openInvite);
+  $("trade").addEventListener("click",openTrade);
+  $("ticker").addEventListener("click",openTrade);
+  captureRef(); claimRef(); setInterval(claimRef,60000);
+  pollPrice(); setInterval(pollPrice,25000);
+  if(state.busted){ $("raid").classList.add("on"); helperEls.forEach(e=>e.classList.add("cuffed")); }
+  // session_start once per day per device -> clean DAU; new-install + return signals
+  try{ const d=new Date().toISOString().slice(0,10); const last=localStorage.getItem("chdm_lastday");
+    if(last!==d){ localStorage.setItem("chdm_lastday",d); track("session_start",{new:A_CID.isNew}); if(last) track("return",{}); } else { track("session_start",{new:false}); } }catch(e){ track("session_start",{new:A_CID.isNew}); }
+  if(!A_CID.isNew===false){} // noop guard
+  try{ if(!localStorage.getItem("chdm_privacy")){ localStorage.setItem("chdm_privacy","1"); setTimeout(()=>showToast("\u{1F9FC} We track anonymous gameplay stats — no wallet, no PII."),1500);} }catch(e){}
+  render(); scheduleGoldie();
+  setInterval(save,10000);
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden) save(); });
+  window.addEventListener("pagehide",save); window.addEventListener("beforeunload",save);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
