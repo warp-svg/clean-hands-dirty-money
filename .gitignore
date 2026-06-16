@@ -1,11 +1,19 @@
 # Clean Hands, Dirty Money — never commit secrets or build junk.
+
+# Local env (real secret values live here for dev only — NEVER commit)
 .env
 .env.local
 .env.*.local
+
+# Any local secret store
 .secrets/
 *.key
 *.pem
+
+# Vercel link/build state
 .vercel
+
+# Deps / build
 node_modules/
 dist/
 .DS_Store

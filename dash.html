@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>CLEAN · Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--sky:#86BFF8;--ink:#1B5DA6;--ink-deep:#0F3E73;--text:#16385C;--muted:#4D6E93;--sol:#9945FF;--sol2:#14F195;--fire:#FF7A3C;--paper:#F4FAFF;--line:rgba(27,93,166,.16);--r:20px;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;color:var(--text);background:var(--paper);
+    background-image:radial-gradient(50% 40% at 15% 10%,rgba(134,191,248,.45),transparent 60%),radial-gradient(45% 40% at 85% 90%,rgba(20,241,149,.14),transparent 62%);min-height:100vh;padding:18px;}
+  h1{font-family:'Fraunces',serif;font-size:26px;margin:0 0 2px;color:var(--ink-deep);}
+  .sub{color:var(--muted);font-size:12.5px;margin-bottom:16px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px;}
+  .card{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:0 12px 30px -20px rgba(27,93,166,.5);}
+  .card .k{font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);font-weight:700;}
+  .card .v{font-size:30px;font-weight:800;color:var(--ink-deep);font-variant-numeric:tabular-nums;line-height:1.1;margin-top:3px;}
+  .card .v small{font-size:13px;color:var(--muted);font-weight:600;}
+  .sec{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;box-shadow:0 12px 30px -20px rgba(27,93,166,.5);}
+  .sec h2{font-family:'Fraunces',serif;font-size:16px;margin:0 0 10px;color:var(--ink-deep);}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px;}
+  .row:last-child{border-bottom:0;}
+  .row b{font-variant-numeric:tabular-nums;color:var(--ink-deep);}
+  .bar{height:8px;border-radius:6px;background:rgba(27,93,166,.12);overflow:hidden;flex:1;margin:0 10px;}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--sky),var(--sol2));}
+  .funnel .row b{color:var(--sol);}
+  .muted{color:var(--muted);font-size:12px;}
+  .err{background:#fff0ec;border:1px solid #ffcab6;color:#b0431f;padding:12px 14px;border-radius:14px;font-size:13px;}
+  input{font:inherit;padding:9px 12px;border-radius:12px;border:1px solid var(--line);width:220px;}
+  button{font:inherit;font-weight:800;padding:9px 16px;border-radius:12px;border:0;background:linear-gradient(160deg,var(--ink),var(--ink-deep));color:#fff;cursor:pointer;}
+  .foot{color:var(--muted);font-size:11px;margin-top:14px;}
+</style>
+</head>
+<body>
+  <h1>🧼 CLEAN · Player Analytics</h1>
+  <div class="sub">Anonymous gameplay stats · clean-hands-dirty-money.vercel.app · private dashboard</div>
+  <div id="gate" style="display:none" class="sec">
+    <h2>Enter dashboard key</h2>
+    <input id="keyin" type="password" placeholder="dashboard key"> <button onclick="go()">View</button>
+    <div class="muted" style="margin-top:8px">Tip: open this page as <code>/dash.html?key=YOURKEY</code></div>
+  </div>
+  <div id="out"></div>
+  <div class="foot" id="foot"></div>
+<script>
+  function qs(k){ return new URLSearchParams(location.search).get(k); }
+  function n(x){ return (x||0).toLocaleString(); }
+  function go(){ const k=document.getElementById('keyin').value.trim(); if(k) location.search="?key="+encodeURIComponent(k); }
+  async function load(){
+    const key=qs("key");
+    if(!key){ document.getElementById('gate').style.display='block'; return; }
+    let j;
+    try{ const r=await fetch("/api/track?action=report&key="+encodeURIComponent(key),{cache:"no-store"}); j=await r.json(); }
+    catch(e){ document.getElementById('out').innerHTML='<div class="err">Network error.</div>'; return; }
+    if(!j.ok){ document.getElementById('out').innerHTML='<div class="err">'+(j.error==="bad-key"?"Wrong key.":("Error: "+j.error))+'</div>'; document.getElementById('gate').style.display='block'; return; }
+    const today=j.dau[j.dau.length-1]||{};
+    const f=j.funnel, m=j.monetization, ref=j.referral;
+    const cards=[
+      ["Players (total)", n(j.players_total)],
+      ["DAU today", n(today.sessions)+" <small>"+n(today.new)+" new · "+n(today.returning)+" ret</small>"],
+      ["Flee / prestige", n(f.flee)],
+      ["Busts", n(f.bust)],
+      ["Referral conversions", n(ref.conversions)+" <small>/ "+n(ref.link_visits)+" visits</small>"],
+      ["Buy clicks", n(m.buy_click)],
+    ].map(c=>'<div class="card"><div class="k">'+c[0]+'</div><div class="v">'+c[1]+'</div></div>').join('');
+    // 7-day DAU bars
+    const maxd=Math.max(1,...j.dau.map(d=>d.sessions));
+    const dau=j.dau.map(d=>'<div class="row"><span class="muted">'+d.day.slice(4,6)+'/'+d.day.slice(6,8)+'</span><span class="bar"><i style="width:'+(d.sessions/maxd*100)+'%"></i></span><b>'+n(d.sessions)+'</b></div>').join('');
+    // funnel
+    const steps=[["First tap",f.first_tap],["Bought an op",f.op_buy],["Bought a perk",f.perk_buy],["Fled (prestige)",f.flee],["Got busted",f.bust],["Achievements",f.achievements],["Offline returns",f.offline_return]];
+    const maxf=Math.max(1,...steps.map(x=>x[1]));
+    const fun=steps.map(x=>'<div class="row"><span>'+x[0]+'</span><span class="bar"><i style="width:'+(x[1]/maxf*100)+'%"></i></span><b>'+n(x[1])+'</b></div>').join('');
+    // top ops
+    const ops=Object.entries(j.top_ops||{}).sort((a,b)=>b[1]-a[1]);
+    const maxo=Math.max(1,...ops.map(x=>x[1]),1);
+    const opsH=ops.length?ops.map(x=>'<div class="row"><span>'+x[0]+'</span><span class="bar"><i style="width:'+(x[1]/maxo*100)+'%"></i></span><b>'+n(x[1])+'</b></div>').join(''):'<div class="muted">no purchases yet</div>';
+    // monetization funnel
+    const mon=[["Wallet-connect clicks",m.wallet_connect_click],["Phantom deep-link opens",m.phantom_deeplink],["Buy-button clicks",m.buy_click]];
+    const monH=mon.map(x=>'<div class="row"><span>'+x[0]+'</span><b>'+n(x[1])+'</b></div>').join('');
+    // locales reached
+    const locs=Object.entries(j.locales_reached||{}).sort((a,b)=>b[1]-a[1]);
+    const locH=locs.length?locs.map(x=>'<div class="row"><span>'+x[0]+'</span><b>'+n(x[1])+'</b></div>').join(''):'<div class="muted">no flees yet</div>';
+    document.getElementById('out').innerHTML=
+      '<div class="grid">'+cards+'</div>'+
+      '<div class="sec"><h2>DAU · last 7 days</h2>'+dau+'</div>'+
+      '<div class="sec funnel"><h2>Core funnel (lifetime)</h2>'+fun+'</div>'+
+      '<div class="sec"><h2>Top laundering ops</h2>'+opsH+'</div>'+
+      '<div class="sec"><h2>Monetization intent funnel</h2>'+monH+'</div>'+
+      '<div class="sec"><h2>Locales reached (flee)</h2>'+locH+'</div>';
+    document.getElementById('foot').textContent="Total events: "+n(j.events_total)+" · generated "+j.generatedAt;
+  }
+  load();
+</script>
+</body>
+</html>

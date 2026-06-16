@@ -1,7 +1,9 @@
+# Files that should never ship to the Vercel deployment.
 .env
 .env.local
 .env.*.local
 .secrets/
 node_modules/
 *.md
+!ANALYTICS.md
 .DS_Store

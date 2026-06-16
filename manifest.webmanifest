@@ -1,0 +1,13 @@
+{
+  "name": "Clean Hands, Dirty Money",
+  "short_name": "Dirty Money",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a1a2f",
+  "theme_color": "#0a1a2f",
+  "start_url": "./",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

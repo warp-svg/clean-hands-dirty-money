@@ -392,7 +392,7 @@
     {id:"trust",   name:"Offshore Trust", icon:"🏝️", cost:6.2e9,      rate:300000, dsc:"beneficiary: unclear, on purpose"},
     {id:"mixer",   name:"Crypto Mixer",   icon:"🌀", cost:9.1e10,     rate:1.9e6,  dsc:"coins go in, history comes out"},
     {id:"yacht",   name:"Superyacht Fund",icon:"🛥️", cost:1.3e12,     rate:1.2e7,  dsc:"depreciating asset, appreciating alibi"},
-    {id:"bank", name:"Private Bank",   icon:"\u{1F3DB}️", cost:1.9e13, rate:9e7, dsc:"too big to jail"},
+    {id:"bank", name:"Private Bank",   icon:"\u{1F3DB}\uFE0F", cost:1.9e13, rate:9e7, dsc:"too big to jail"},
     {id:"sov",  name:"Sovereign Fund", icon:"\u{1F451}", cost:2.6e14, rate:6e8, dsc:"a whole nation's slush fund"},
   ];
   const GROWTH = 1.15;
@@ -413,7 +413,7 @@
     {id:"inspector",name:"Pay the Inspector",  icon:"🕵️", type:"dump", amount:42, cost:45000,  growth:1.35, dsc:"the report gets 'lost' — heat −42 now"},
     {id:"fixer",    name:"Retain a Lawyer",    icon:"⚖️", type:"cool", cost:18000,  growth:1.55, dsc:"+passive cooling: heat falls faster"},
     {id:"don",      name:"Pay Off a Senator",  icon:"🎩", type:"slow", cost:600000, growth:1.7,  dsc:"−heat gain: draws less attention"},
-    {id:"fed", name:"Bribe a Fed Agent", icon:"\u{1F575}️", type:"fedskip", cost:2.5e8, growth:1.4, dsc:"buys a pass for your NEXT federal check (skip one raid)"},
+    {id:"fed", name:"Bribe a Fed Agent", icon:"\u{1F575}\uFE0F", type:"fedskip", cost:2.5e8, growth:1.4, dsc:"buys a pass for your NEXT federal check (skip one raid)"},
   ];
   const LOCALES = [
     {name:"Santorini", bg:"assets/bg0.jpg"},
@@ -434,11 +434,11 @@
     {id:"a6", icon:"👑", name:"Kingpin",        test:s=>s.earned>=1e9,      dsc:"launder $1,000,000,000"},
     {id:"a7", icon:"👆", name:"Quick Fingers",  test:s=>s.taps>=500,        dsc:"500 hand-counts"},
     {id:"a8", icon:"🌀", name:"Ghost Money",    test:s=>s.owned.mixer>=1,   dsc:"open a Crypto Mixer"},
-    {id:"a9", icon:"\u{1F575}️", name:"Untouchable",   test:s=>(s.fbiEvaded||0)>=1,dsc:"flee while the FBI closes in"},
+    {id:"a9", icon:"\u{1F575}\uFE0F", name:"Untouchable",   test:s=>(s.fbiEvaded||0)>=1,dsc:"flee while the FBI closes in"},
     {id:"a10",icon:"\u{1F48E}", name:"Trillionaire",  test:s=>s.earned>=1e12,     dsc:"launder $1,000,000,000,000"},
     {id:"a11",icon:"\u{1F30D}", name:"Globe-trotter", test:s=>s.passports>=6,     dsc:"reach the Private Island"},
     {id:"a12",icon:"\u{1F91D}", name:"The Plug",      test:s=>!!s.everReferred,   dsc:"a friend joins via your link"},
-    {id:"a13",icon:"⚡", name:"Sticky Fingers",test:s=>s.taps>=5000,       dsc:"5,000 hand-counts"},
+    {id:"a13",icon:"\u26A1", name:"Sticky Fingers",test:s=>s.taps>=5000,       dsc:"5,000 hand-counts"},
   ];
 
   const state = {
@@ -608,7 +608,7 @@
   // ---- ESCAPE / PRESTIGE pane ----
   paneE.innerHTML=`<div class="op" style="flex-direction:column;align-items:stretch;gap:10px;padding:14px">
     <div class="nm" style="font-size:15px">\u{1F6C2} Flee the Country</div>
-    <div class="dsc" style="white-space:normal;line-height:1.4">Cash out, vanish abroad, and relocate to a new luxury hideout. Wipes your cash, operations, perks &amp; heat — but each <b style="color:var(--gold)">Fake Passport</b> is <b style="color:var(--green-bright)">+3% income, forever</b>, and moves you somewhere richer. First passport at <b>$25K</b> laundered all-time.</div>
+    <div class="dsc" style="white-space:normal;line-height:1.4">Cash out, vanish abroad, and relocate to a new luxury hideout. Wipes your cash, operations, perks &amp; heat \u2014 but each <b style="color:var(--gold)">Fake Passport</b> is <b style="color:var(--green-bright)">+3% income, forever</b>, and moves you somewhere richer. First passport at <b>$25K</b> laundered all-time.</div>
     <div class="pbar"><i id="ppFill"></i></div>
     <div class="yield" id="escInfo" style="font-size:12px;white-space:normal"></div>
     <div id="fleeBtn">FLEE THE COUNTRY</div>
@@ -624,7 +624,7 @@
   function doPrestige(){
     const gain=pendingPassports();
     if(gain<1){ showToast("Not enough laundered yet to flee clean."); return; }
-    if(!confirm("Flee the country?\n\nYou lose your cash, operations, perks & heat, but gain "+gain+" Fake Passport"+(gain>1?"s":"")+" — +"+(gain*3)+"% PERMANENT income — and relocate to "+LOCALES[Math.min(totalPassports(),LOCALES.length-1)].name+".")) return;
+    if(!confirm("Flee the country?\n\nYou lose your cash, operations, perks & heat, but gain "+gain+" Fake Passport"+(gain>1?"s":"")+" \u2014 +"+(gain*3)+"% PERMANENT income \u2014 and relocate to "+LOCALES[Math.min(totalPassports(),LOCALES.length-1)].name+".")) return;
     play("prestige");
     state.pastEarned+=state.earned; state.passports=totalPassports();
     state.bank=0; state.earned=0;
@@ -638,7 +638,7 @@
     helperEls.forEach(e=>e.remove()); helperEls.length=0;
     track("flee",{passports:state.passports, locale:LOCALES[((state.passports%LOCALES.length)+LOCALES.length)%LOCALES.length].name});
     displayBank=0; syncHands(); setLocale(); save(); render();
-    showToast("✈️ You vanished. "+state.passports+" Passports · +"+(state.passports*3)+"% forever.");
+    showToast("\u2708\uFE0F You vanished. "+state.passports+" Passports \u00b7 +"+(state.passports*3)+"% forever.");
   }
 
   // ---- NEW GAME / HARD RESET ----
@@ -648,11 +648,11 @@
     if(endgame){
       if(em) em.textContent="\u{1F451}";
       if(ti) ti.textContent="Start a new life?";
-      if(bo) bo.innerHTML="You’ve reached the <b>Private Island</b> — the top. Starting over wipes your <b>entire run</b> (bank, ops, perks, bribes, passports, heat, FBI record &amp; achievements) and drops you back in <b>Santorini</b> with nothing. This can’t be undone.";
+      if(bo) bo.innerHTML="You\u2019ve reached the <b>Private Island</b> \u2014 the top. Starting over wipes your <b>entire run</b> (bank, ops, perks, bribes, passports, heat, FBI record &amp; achievements) and drops you back in <b>Santorini</b> with nothing. This can\u2019t be undone.";
     } else {
       if(em) em.textContent="\u{1F9FC}";
       if(ti) ti.textContent="Wipe progress &amp; start over?";
-      if(bo) bo.innerHTML="This wipes your <b>entire run</b> — bank, operations, perks, bribes, passports, heat, FBI record and achievements — and drops you back in <b>Santorini</b> with nothing. This can’t be undone.";
+      if(bo) bo.innerHTML="This wipes your <b>entire run</b> \u2014 bank, operations, perks, bribes, passports, heat, FBI record and achievements \u2014 and drops you back in <b>Santorini</b> with nothing. This can\u2019t be undone.";
     }
     $("cmodal").classList.add("on");
   }
@@ -676,7 +676,7 @@
     try{ track("new_game",{}); }catch(e){}
     save(); render(); updatePile&&updatePile();
     closeResetModal(); closeSheet();
-    showToast("\u{1F9FC} Fresh start — welcome back to Santorini.");
+    showToast("\u{1F9FC} Fresh start \u2014 welcome back to Santorini.");
   }
 
   // ---- SAVE / LOAD / OFFLINE ----
@@ -695,7 +695,7 @@
     if(rate<=0||elapsed<60) return;
     const capped=Math.min(elapsed,8*3600); const earn=rate*capped*0.5;
     if(earn<1) return; state.bank+=earn; state.earned+=earn; track("offline_return",{secs:Math.round(capped)});
-    setTimeout(()=>showToast("✈️ Away "+fmtTime(capped)+" — your crew laundered +$"+fmt(earn)),800);
+    setTimeout(()=>showToast("\u2708\uFE0F Away "+fmtTime(capped)+" \u2014 your crew laundered +$"+fmt(earn)),800);
   }
 
   function showToast(msg){ toast.textContent=msg; toast.classList.add("show"); clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove("show"),2300); }
@@ -793,7 +793,7 @@
   const BILLS=["💵","💴","💶","💷","🤑"];
   function spawnBill(x,y){ _fxSpawn(fx,CONFIG.fxCap,"bill",x,y,{"--x":((Math.random()*160-80)|0)+"px","--y":(-(150+Math.random()*150)|0)+"px","--r2":((Math.random()*120-60)|0)+"deg","--d":(1.6+Math.random()*1.1).toFixed(2)+"s"},BILLS[(Math.random()*BILLS.length)|0],2900); }
   function spawnFlip(x,y){ _fxSpawn(fx,CONFIG.fxCap,"flip",x,y,null,"💵",600); }
-  function spawnSpark(x,y,n){ n=n||4; for(let i=0;i<n;i++){ const a=Math.random()*6.283,d=18+Math.random()*28; _fxSpawn(fx,CONFIG.fxCap,"spark",x,y,{"--sx":((Math.cos(a)*d)|0)+"px","--sy":((Math.sin(a)*d)|0)+"px"},"✦",650); } }
+  function spawnSpark(x,y,n){ n=n||4; for(let i=0;i<n;i++){ const a=Math.random()*6.283,d=18+Math.random()*28; _fxSpawn(fx,CONFIG.fxCap,"spark",x,y,{"--sx":((Math.cos(a)*d)|0)+"px","--sy":((Math.sin(a)*d)|0)+"px"},"\u2726",650); } }
 
   // ---------------- MAIN HAND FRAMES ----------------
   let frameIdx=0, lastCountT=0, _ovlTop=true; let _tapInc=0, _psvInc=0;
@@ -946,7 +946,7 @@
     const c=cps(); badge.textContent=state.busted?"🚔 FROZEN":(c>0?("$"+fmt(c)+"/s"):"idle");
     heatFill.style.width=state.heat.toFixed(1)+"%"; heatPct.textContent=Math.floor(state.heat)+"%"; heatStatus.textContent=state.busted?"BUSTED — pay bail or cool down.":heatText();
     heatFill.style.boxShadow="0 0 "+(3+state.heat*0.16).toFixed(0)+"px rgba(255,122,60,"+(0.18+state.heat/170).toFixed(2)+")";
-    { const fs=$("fedstatus"); if(fs){ const idx=state.fbiIdx; if(idx<CONFIG.fbiMilestones.length && state.earned>=CONFIG.fbiMilestones[idx]*0.25){ const next=CONFIG.fbiMilestones[idx]; const risky=state.heat>=CONFIG.fbiHeatGate; fs.style.display="flex"; fs.className="fedstatus "+(risky?"risky":"clear"); fs.innerHTML="🕵️ FBI next check <b>$"+fmt(next)+"</b> · "+(risky?"heat RISKY ⚠":"clear ✓"); } else fs.style.display="none"; } }
+    { const fs=$("fedstatus"); if(fs){ const idx=state.fbiIdx; if(idx<CONFIG.fbiMilestones.length && state.earned>=CONFIG.fbiMilestones[idx]*0.25){ const next=CONFIG.fbiMilestones[idx]; const risky=state.heat>=CONFIG.fbiHeatGate; fs.style.display="flex"; fs.className="fedstatus "+(risky?"risky":"clear"); fs.innerHTML="🕵️ FBI next check <b>$"+fmt(next)+"</b> · "+(risky?"heat RISKY \u26A0":"clear \u2713"); } else fs.style.display="none"; } }
     for(const b of BRIBES){ const r=briRows[b.id], cc=bribeCost(b);
       r.el.classList.toggle("afford",state.bank>=cc); r.el.classList.toggle("cant",state.bank<cc); r.cost.textContent="$"+fmt(cc);
       const n=state.bribeOwned[b.id]; if(b.type!=="dump"&&n>0){ r.ct.style.display=""; r.ct.textContent="Lv"+n; } else r.ct.style.display="none"; }
@@ -956,7 +956,7 @@
     const prog=Math.max(0,Math.min(1,(lifetime()-prevReq)/(nextReq-prevReq)));
     const pf=$("ppFill"); if(pf){ pf.style.width=(prog*100).toFixed(1)+"%"; pf.style.boxShadow="0 0 "+(3+prog*16).toFixed(0)+"px rgba(20,241,149,"+(0.18+prog*0.5).toFixed(2)+")"; }
     const ei=$("escInfo"); if(ei) ei.innerHTML = pend>=1
-      ? "<b style='color:var(--green-bright)'>READY TO FLEE</b> — bank <b style='color:var(--gold)'>"+pend+"</b> passport"+(pend>1?"s":"")+" (+"+(pend*3)+"% forever) and relocate. You hold "+state.passports+" (+"+(state.passports*3)+"%)."
+      ? "<b style='color:var(--green-bright)'>READY TO FLEE</b> \u2014 bank <b style='color:var(--gold)'>"+pend+"</b> passport"+(pend>1?"s":"")+" (+"+(pend*3)+"% forever) and relocate. You hold "+state.passports+" (+"+(state.passports*3)+"%)."
       : "Lifetime <b style='color:var(--gold)'>$"+fmt(lifetime())+"</b> / <b>$"+fmt(nextReq)+"</b> to your next passport. You hold "+state.passports+" (+"+(state.passports*3)+"%).";
     const fb=$("fleeBtn"); if(fb){ fb.classList.toggle("ready",pend>=1); fb.classList.toggle("locked2",pend<1); }
     const _rb=(state.refBonusUntil||0)-Date.now(); const _rs=$("refspan");
@@ -1128,7 +1128,7 @@
   try{ const d=new Date().toISOString().slice(0,10); const last=localStorage.getItem("chdm_lastday");
     if(last!==d){ localStorage.setItem("chdm_lastday",d); track("session_start",{new:A_CID.isNew}); if(last) track("return",{}); } else { track("session_start",{new:false}); } }catch(e){ track("session_start",{new:A_CID.isNew}); }
   if(!A_CID.isNew===false){} // noop guard
-  try{ if(!localStorage.getItem("chdm_privacy")){ localStorage.setItem("chdm_privacy","1"); setTimeout(()=>showToast("\u{1F9FC} We track anonymous gameplay stats — no wallet, no PII."),1500);} }catch(e){}
+  try{ if(!localStorage.getItem("chdm_privacy")){ localStorage.setItem("chdm_privacy","1"); setTimeout(()=>showToast("\u{1F9FC} We track anonymous gameplay stats \u2014 no wallet, no PII."),1500);} }catch(e){}
   render(); scheduleGoldie();
   setInterval(save,10000);
   document.addEventListener("visibilitychange",()=>{ if(document.hidden) save(); });
